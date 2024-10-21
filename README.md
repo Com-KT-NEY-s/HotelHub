@@ -1,5 +1,4 @@
 # HotelHub
-# Sistema de Gestão Hoteleira
 
 ## Descrição
 
