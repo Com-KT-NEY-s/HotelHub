@@ -8,6 +8,7 @@ com\mycompany\hotelaria\Servicos$4.class
 com\mycompany\hotelaria\Quartos$5.class
 com\mycompany\hotelaria\Hotelaria$2.class
 com\mycompany\hotelaria\Hospedes$6.class
+com\mycompany\hotelaria\Usuarios$10.class
 com\mycompany\hotelaria\Pagamentos$5.class
 com\mycompany\hotelaria\Hospedes$3.class
 com\mycompany\hotelaria\Usuarios$4.class
@@ -27,17 +28,18 @@ com\mycompany\hotelaria\Pagamentos$4.class
 com\mycompany\hotelaria\Reservas$7.class
 com\mycompany\hotelaria\Hospedes$7.class
 com\mycompany\hotelaria\Pagamentos.class
-com\mycompany\hotelaria\Hospedes$8.class
 com\mycompany\hotelaria\Pagamentos$3.class
 com\mycompany\hotelaria\Hotelaria$4.class
 com\mycompany\hotelaria\Hospedes$1.class
 com\mycompany\hotelaria\Usuarios$5.class
+Classes\Database.class
 com\mycompany\hotelaria\Hotelaria.class
 com\mycompany\hotelaria\Servicos$3.class
 com\mycompany\hotelaria\Quartos$7.class
 com\mycompany\hotelaria\Reservas.class
 com\mycompany\hotelaria\Usuarios$2.class
 com\mycompany\hotelaria\Reservas$5.class
+com\mycompany\hotelaria\Usuarios$9.class
 com\mycompany\hotelaria\Hotelaria$1.class
 com\mycompany\hotelaria\Hotelaria$7.class
 com\mycompany\hotelaria\Servicos$6.class

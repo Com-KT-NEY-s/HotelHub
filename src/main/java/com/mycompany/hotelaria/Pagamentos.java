@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package hotel;
+package com.mycompany.hotelaria;
 
 import javax.swing.JFrame;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
@@ -11,7 +11,7 @@ import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
  *
  * @author FELIPEEDUARDOMONARI
  */
-public class Servicos extends javax.swing.JFrame {
+public class Pagamentos extends javax.swing.JFrame {
     public static void usuarios(){
         JFrame j = new Usuarios();
         j.setVisible(true);
@@ -48,7 +48,7 @@ public class Servicos extends javax.swing.JFrame {
         j.setLocationRelativeTo(null);
         j.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
-    public Servicos() {
+    public Pagamentos() {
         initComponents();
     }
 
@@ -184,20 +184,20 @@ public class Servicos extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Servicos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Pagamentos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Servicos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Pagamentos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Servicos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Pagamentos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Servicos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Pagamentos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Servicos().setVisible(true);
+                new Pagamentos().setVisible(true);
             }
         });
     }
