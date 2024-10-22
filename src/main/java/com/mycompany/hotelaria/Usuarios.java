@@ -24,7 +24,7 @@ import javax.swing.table.DefaultTableModel;
  */
 public class Usuarios extends javax.swing.JFrame {
 
-    private DefaultTableModel tabelaUsuarios = new DefaultTableModel(new Object[]{"Nome", "Idade", "CPF"}, 0);
+    private DefaultTableModel tabelaUsuarios = new DefaultTableModel(new Object[]{"ID", "Nome", "Idade", "CPF"}, 0);
 
     public static void usuarios() {
         JFrame j = new Usuarios();
@@ -81,8 +81,7 @@ public class Usuarios extends javax.swing.JFrame {
                     String nome = (String) tabelaUsuarios.getValueAt(row, 1);
                     String idade = tabelaUsuarios.getValueAt(row, 2).toString();
                     String cpf = tabelaUsuarios.getValueAt(row, 3).toString();
-
-                    editarUsuarios(nome, idade, cpf);
+                    editarUsuarios(nome, idade, cpf, id);
                 }
             }
         });
@@ -390,7 +389,7 @@ public class Usuarios extends javax.swing.JFrame {
                 String nome = rs.getString("nome");
                 String idade = rs.getString("idade");
                 String cpf = rs.getString("cpf");
-                model.addRow(new Object[]{nome, idade, cpf});
+                model.addRow(new Object[]{id, nome, idade, cpf});
             }
 
         } catch (Exception e) {
@@ -412,14 +411,15 @@ public class Usuarios extends javax.swing.JFrame {
         }
     }
 
-    public void editarUsuarios(String nome, String idade, String cpf) {
+    public void editarUsuarios(String nome, String idade, String cpf, int id) {
         try (Connection conn = Database.getConnection()) {  // Obtém conexão com o banco
             String query = "UPDATE usuarios SET nome = ?, idade = ?, cpf = ? WHERE id_usuario = ?";  // SQL com placeholders
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, nome);  // Define o valor do primeiro placeholder (sabor)
             stmt.setString(2, idade);  // Converte preco para double e define o segundo placeholder
-            stmt.setString(3, cpf);  // Define o valor do terceiro placeholder (id)
-
+            stmt.setString(3, cpf); // Define o valor do terceiro placeholder (id)
+            stmt.setInt(4, id);
+            
             stmt.executeUpdate();  // Executa a query
         } catch (Exception ex) {
             ex.printStackTrace();
