@@ -77,15 +77,38 @@ public class Usuarios extends javax.swing.JFrame {
             public void tableChanged(TableModelEvent e) {
                 if (e.getType() == TableModelEvent.UPDATE) {
                     int row = e.getFirstRow();
-                    int id = Integer.parseInt(tabelaUsuarios.getValueAt(row, 0).toString()); // Supondo que o ID esteja na primeira coluna
+                    int column = e.getColumn();
+
+                    if (column == 3) { // CPF está na 4ª coluna (índice 3)
+                        String newCpf = (String) tabelaUsuarios.getValueAt(row, column);
+                        String originalCpf = (String) tabelaUsuarios.getValueAt(row, column);
+
+                        if (!isValidCPF(newCpf)) {
+                            JOptionPane.showMessageDialog(null, "Formato de CPF inválido! O CPF deve estar no formato 'XXX.XXX.XXX-XX'.", "Erro", JOptionPane.ERROR_MESSAGE);
+
+                            // Reverte a alteração
+                            tabelaUsuarios.setValueAt(originalCpf, row, column);
+                            return; // Para evitar a atualização do usuário
+                        }
+                    }
+
+                    // Continuação do seu código para editar usuários
+                    int id = Integer.parseInt(tabelaUsuarios.getValueAt(row, 0).toString());
                     String nome = (String) tabelaUsuarios.getValueAt(row, 1);
                     String idade = tabelaUsuarios.getValueAt(row, 2).toString();
-                    String cpf = tabelaUsuarios.getValueAt(row, 3).toString();
-                    editarUsuarios(nome, idade, cpf, id);
+                    editarUsuarios(nome, idade, (String) tabelaUsuarios.getValueAt(row, 3), id);
                 }
             }
         });
     }
+    
+        // Método para validar o CPF
+    private boolean isValidCPF(String cpf) {
+        // Remove caracteres não numéricos
+        cpf = cpf.replaceAll("[^0-9]", "");
+        return cpf.matches("\\d{11}"); // Verifica se tem exatamente 11 dígitos
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -419,7 +442,7 @@ public class Usuarios extends javax.swing.JFrame {
             stmt.setString(2, idade);  // Converte preco para double e define o segundo placeholder
             stmt.setString(3, cpf); // Define o valor do terceiro placeholder (id)
             stmt.setInt(4, id);
-            
+
             stmt.executeUpdate();  // Executa a query
         } catch (Exception ex) {
             ex.printStackTrace();
