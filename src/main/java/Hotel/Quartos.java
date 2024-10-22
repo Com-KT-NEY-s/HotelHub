@@ -1,5 +1,5 @@
 
-package com.mycompany.hotelaria;
+package Hotel;
 
 import javax.swing.JFrame;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
