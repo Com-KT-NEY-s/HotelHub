@@ -1,48 +1,71 @@
 package com.mycompany.softwarezika;
 
 import Classes.Servicos;
+import DataBase.Database;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.table.DefaultTableModel;
 
 public class WinCriaServicos extends javax.swing.JFrame {
-    
+
+    private DefaultTableModel tabelaServicos = new DefaultTableModel(new Object[]{"Serviço", "Valor"}, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
+
     // ENVIAR PARA O BANCO
     // CORRIGIR FUNÇÕES
     // LISTAR NA TABELA
     // CRUD DA TABELA
-    
     public WinCriaServicos() {
         initComponents();
     }
-    
-       private void carregaTabela() {
-        try { 
-            String[] colunasQ = {"Tipo", "preco"};
 
-            Servicos servico = new Servicos();
+    public void criar() {
+        Servicos s = new Servicos();
 
-            String[][] servicos = servico.ler();
+        String tipoS = s.getTipo();
+        double valorS = s.getPreco();
 
+        String insertSql = "INSERT INTO servicos (tipo, preco) VALUES (?, ?)";
+        String selectSql = "SELECT id_servico, tipo, preco FROM servicos";
 
-            DefaultTableModel tableModelS = new DefaultTableModel(servicos, colunasQ);
-            tableModelS.setColumnIdentifiers(colunasQ);
+        try (Connection conn = Database.getConnection(); PreparedStatement insertStmt = conn.prepareStatement(insertSql); PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
 
-            tableModelS.setRowCount(0);
-            for (String[] linha : servicos) {
-                tableModelS.addRow(linha);
+            // Insere os dados na tabela "servicos"
+            insertStmt.setString(1, tipoS); // Tipo do serviço
+            insertStmt.setDouble(2, valorS); // Preço do serviço
+            insertStmt.execute();
+
+            // Consulta a tabela "servicos" e atualiza a interface
+            try (ResultSet rs = selectStmt.executeQuery()) {
+                tabelaServicos.setRowCount(0); // Limpa a tabela antes de adicionar novos dados
+
+                while (rs.next()) {
+                    Object[] row = {
+                        rs.getString("tipo"), // Tipo do serviço
+                        rs.getDouble("preco") // Preço do serviço (agora corrigido)
+                    };
+                    tabelaServicos.addRow(row); // Adiciona a linha na tabela
+                }
             }
-
-            tblCriaServicos.setModel(tableModelS);
-        } catch (Exception e) {
-
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
+
+
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jLabel3 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tblCriaServicos = new javax.swing.JTable();
+        JTservicos = new javax.swing.JTable();
         txtValorS = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
@@ -58,7 +81,7 @@ public class WinCriaServicos extends javax.swing.JFrame {
 
         jScrollPane1.setForeground(new java.awt.Color(0, 0, 0));
 
-        tblCriaServicos.setModel(new javax.swing.table.DefaultTableModel(
+        JTservicos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null},
                 {null, null},
@@ -69,13 +92,11 @@ public class WinCriaServicos extends javax.swing.JFrame {
                 "Tipo", "Valor"
             }
         ));
-        tblCriaServicos.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        tblCriaServicos.setDoubleBuffered(true);
-        jScrollPane1.setViewportView(tblCriaServicos);
+        JTservicos.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        JTservicos.setDoubleBuffered(true);
+        jScrollPane1.setViewportView(JTservicos);
 
         jPanel3.setBackground(new java.awt.Color(0, 0, 0));
-
-        jLabel4.setIcon(new javax.swing.ImageIcon("C:\\Users\\WESLEYLUCASMOREIRA\\Documents\\mini hotel.jpg")); // NOI18N
 
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("ADICIONAR SERVIÇOS");
@@ -112,12 +133,6 @@ public class WinCriaServicos extends javax.swing.JFrame {
 
         jLabel2.setText("Tipo:");
 
-        txtTipoS.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtTipoSActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -147,7 +162,7 @@ public class WinCriaServicos extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtTipoS, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtTipoS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -156,7 +171,7 @@ public class WinCriaServicos extends javax.swing.JFrame {
                         .addComponent(jLabel3)
                         .addGap(27, 27, 27)
                         .addComponent(btnAdicionarServicos)
-                        .addGap(0, 162, Short.MAX_VALUE))
+                        .addGap(0, 158, Short.MAX_VALUE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -173,19 +188,12 @@ public class WinCriaServicos extends javax.swing.JFrame {
 
         servico.setTipo(tipo);
         servico.setPreco(preco);
-        
 
         servico.criar();
-        carregaTabela();
     }//GEN-LAST:event_btnAdicionarServicosActionPerformed
 
-    private void txtTipoSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTipoSActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtTipoSActionPerformed
-
-   
     public static void main(String args[]) {
-       
+
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -203,8 +211,6 @@ public class WinCriaServicos extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(WinCriaServicos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
-
-
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new WinCriaServicos().setVisible(true);
@@ -213,6 +219,7 @@ public class WinCriaServicos extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable JTservicos;
     private javax.swing.JButton btnAdicionarServicos;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -221,7 +228,6 @@ public class WinCriaServicos extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tblCriaServicos;
     private javax.swing.JTextField txtTipoS;
     private javax.swing.JTextField txtValorS;
     // End of variables declaration//GEN-END:variables
