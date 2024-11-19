@@ -67,7 +67,6 @@ public class WinCriaQuartos extends javax.swing.JFrame {
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(700, 400));
         setSize(new java.awt.Dimension(700, 400));
 
         jScrollPane1.setForeground(new java.awt.Color(0, 0, 0));
@@ -199,6 +198,7 @@ public class WinCriaQuartos extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAdicionarQuartosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarQuartosActionPerformed
