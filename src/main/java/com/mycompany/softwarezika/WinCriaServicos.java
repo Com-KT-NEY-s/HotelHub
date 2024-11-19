@@ -17,38 +17,38 @@ public class WinCriaServicos extends javax.swing.JFrame {
         }
     };
 
-    // ENVIAR PARA O BANCO
-    // CORRIGIR FUNÇÕES
     // LISTAR NA TABELA
     // CRUD DA TABELA
+    
     public WinCriaServicos() {
         initComponents();
     }
 
-    public void criar() {
-        Servicos s = new Servicos();
-
-        String tipoS = s.getTipo();
-        double valorS = s.getPreco();
-
+    public void criar(String tipo, double preco) {
         String insertSql = "INSERT INTO servicos (tipo, preco) VALUES (?, ?)";
         String selectSql = "SELECT id_servico, tipo, preco FROM servicos";
 
         try (Connection conn = Database.getConnection(); PreparedStatement insertStmt = conn.prepareStatement(insertSql); PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
 
             // Insere os dados na tabela "servicos"
-            insertStmt.setString(1, tipoS); // Tipo do serviço
-            insertStmt.setDouble(2, valorS); // Preço do serviço
-            insertStmt.execute();
+            insertStmt.setString(1, tipo); // Tipo do serviço
+            insertStmt.setDouble(2, preco); // Preço do serviço
+            int rowsAffected = insertStmt.executeUpdate(); // Usar executeUpdate() para garantir a inserção
+
+            if (rowsAffected > 0) {
+                System.out.println("Inserção bem-sucedida.");
+            } else {
+                System.out.println("Nenhuma linha inserida.");
+            }
 
             // Consulta a tabela "servicos" e atualiza a interface
             try (ResultSet rs = selectStmt.executeQuery()) {
                 tabelaServicos.setRowCount(0); // Limpa a tabela antes de adicionar novos dados
-
                 while (rs.next()) {
+                    System.out.println("Quase lá");
                     Object[] row = {
                         rs.getString("tipo"), // Tipo do serviço
-                        rs.getDouble("preco") // Preço do serviço (agora corrigido)
+                        rs.getDouble("preco") // Preço do serviço
                     };
                     tabelaServicos.addRow(row); // Adiciona a linha na tabela
                 }
@@ -81,17 +81,7 @@ public class WinCriaServicos extends javax.swing.JFrame {
 
         jScrollPane1.setForeground(new java.awt.Color(0, 0, 0));
 
-        JTservicos.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
-            },
-            new String [] {
-                "Tipo", "Valor"
-            }
-        ));
+        JTservicos.setModel(tabelaServicos);
         JTservicos.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         JTservicos.setDoubleBuffered(true);
         jScrollPane1.setViewportView(JTservicos);
@@ -182,14 +172,18 @@ public class WinCriaServicos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAdicionarServicosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarServicosActionPerformed
-        Classes.Servicos servico = new Classes.Servicos();
         String tipo = txtTipoS.getText();
-        double preco = Double.parseDouble(txtValorS.getText());
+        double preco;
 
-        servico.setTipo(tipo);
-        servico.setPreco(preco);
+        try {
+            preco = Double.parseDouble(txtValorS.getText());
+        } catch (NumberFormatException e) {
+            // Exiba uma mensagem de erro se o valor não for válido
+            javax.swing.JOptionPane.showMessageDialog(this, "Valor inválido! Digite um número.", "Erro", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-        servico.criar();
+        criar(tipo, preco);
     }//GEN-LAST:event_btnAdicionarServicosActionPerformed
 
     public static void main(String args[]) {
