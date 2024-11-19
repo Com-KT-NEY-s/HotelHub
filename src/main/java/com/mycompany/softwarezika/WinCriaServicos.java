@@ -2,6 +2,7 @@ package com.mycompany.softwarezika;
 
 import Classes.Servicos;
 import DataBase.Database;
+import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,9 +20,66 @@ public class WinCriaServicos extends javax.swing.JFrame {
 
     // LISTAR NA TABELA
     // CRUD DA TABELA
-    
     public WinCriaServicos() {
         initComponents();
+
+        JTservicos.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                if (evt.getKeyCode() == KeyEvent.VK_DELETE) {
+                    excluirLinhaSelecionada();
+                }
+            }
+        });
+
+        listarServicos();
+    }
+
+    private void excluirLinhaSelecionada() {
+        // Obtém o índice da linha selecionada na tabela
+        int linhaSelecionada = JTservicos.getSelectedRow();
+
+        if (linhaSelecionada != -1) { // Verifica se há uma linha selecionada
+            // Obtém o id_servico da linha selecionada (presumindo que o id_servico está na coluna 0 da tabela)
+            int idServico = (int) JTservicos.getValueAt(linhaSelecionada, 0);
+
+            // Pergunta se o usuário tem certeza de que deseja excluir
+            int resposta = javax.swing.JOptionPane.showConfirmDialog(
+                    this, "Tem certeza que deseja excluir este serviço?",
+                    "Excluir Serviço", javax.swing.JOptionPane.YES_NO_OPTION
+            );
+
+            if (resposta == javax.swing.JOptionPane.YES_OPTION) {
+                // Exclui o serviço do banco de dados
+                excluirServicoDoBanco(idServico);
+
+                // Remove a linha da tabela
+                DefaultTableModel modeloTabela = (DefaultTableModel) JTservicos.getModel();
+                modeloTabela.removeRow(linhaSelecionada);
+            }
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Selecione uma linha para excluir.", "Erro", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void excluirServicoDoBanco(int idServico) {
+        String deleteSql = "DELETE FROM servicos WHERE id_servico = ?";
+
+        try (Connection conn = Database.getConnection(); PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
+
+            // Define o id_servico no PreparedStatement
+            deleteStmt.setInt(1, idServico);
+
+            int rowsAffected = deleteStmt.executeUpdate(); // Executa a exclusão no banco de dados
+
+            if (rowsAffected > 0) {
+                System.out.println("Serviço excluído com sucesso.");
+            } else {
+                System.out.println("Erro ao excluir serviço.");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void criar(String tipo, double preco) {
@@ -41,18 +99,30 @@ public class WinCriaServicos extends javax.swing.JFrame {
                 System.out.println("Nenhuma linha inserida.");
             }
 
-            // Consulta a tabela "servicos" e atualiza a interface
-            try (ResultSet rs = selectStmt.executeQuery()) {
-                tabelaServicos.setRowCount(0); // Limpa a tabela antes de adicionar novos dados
-                while (rs.next()) {
-                    System.out.println("Quase lá");
-                    Object[] row = {
-                        rs.getString("tipo"), // Tipo do serviço
-                        rs.getDouble("preco") // Preço do serviço
-                    };
-                    tabelaServicos.addRow(row); // Adiciona a linha na tabela
-                }
+            // Chama o método listarServicos() para atualizar a tabela
+            listarServicos();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void listarServicos() {
+        String selectSql = "SELECT id_servico, tipo, preco FROM servicos";
+
+        try (Connection conn = Database.getConnection(); PreparedStatement selectStmt = conn.prepareStatement(selectSql); ResultSet rs = selectStmt.executeQuery()) {
+
+            tabelaServicos.setRowCount(0); // Limpa a tabela
+
+            // Adiciona as linhas à tabela
+            while (rs.next()) {
+                Object[] row = {
+                    rs.getString("tipo"), // Tipo do serviço
+                    rs.getDouble("preco") // Preço do serviço
+                };
+                tabelaServicos.addRow(row); // Adiciona a linha na tabela
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
