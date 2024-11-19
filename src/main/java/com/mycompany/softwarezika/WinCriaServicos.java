@@ -4,7 +4,11 @@ import Classes.Servicos;
 import javax.swing.table.DefaultTableModel;
 
 public class WinCriaServicos extends javax.swing.JFrame {
-
+    
+    // ENVIAR PARA O BANCO
+    // CORRIGIR FUNÇÕES
+    // LISTAR NA TABELA
+    // CRUD DA TABELA
     
     public WinCriaServicos() {
         initComponents();

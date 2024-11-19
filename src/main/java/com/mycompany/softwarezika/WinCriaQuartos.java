@@ -8,6 +8,11 @@ import javax.swing.table.DefaultTableModel;
 
 public class WinCriaQuartos extends javax.swing.JFrame {
 
+    // ENVIAR PARA O BANCO
+    // CORRIGIR FUNÇÕES
+    // LISTAR NA TABELA
+    // CRUD DA TABELA
+    
     public WinCriaQuartos() {
         initComponents();
         Connection conn = Database.getConnection();
