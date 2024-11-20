@@ -5,6 +5,7 @@ import DataBase.Database;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -43,13 +44,56 @@ public class WinReservas extends javax.swing.JFrame {
         }
     }
 
-    private void gerarValorTotal() {
-        Quartos q = new Quartos();
+    private void fazerReserva() {
+        // Pegando o valor selecionado no JComboBox de Quarto
+        String tipoQuartoSelecionado = (String) comboQ.getSelectedItem();
 
-        double precoQ = q.getPreco();
-        //double servicoQ = 
+        // Pegando o valor selecionado no JComboBox de Serviço
+        String tipoServicoSelecionado = (String) comboS.getSelectedItem();
 
-        //valorTotal = (diasReservadosDoub * precoQ) + ;
+        // Variáveis para armazenar os preços
+        double precoQuarto = 0;
+        double precoServico = 0;
+
+        // Consulta para pegar o preço do quarto selecionado
+        String sqlQuarto = "SELECT preco FROM quartos WHERE tipo = ?";
+        String sqlServico = "SELECT preco FROM servicos WHERE tipo = ?";
+
+        try (Connection conn = Database.getConnection()) {
+            // Consultando o preço do quarto
+            try (PreparedStatement stmtQuarto = conn.prepareStatement(sqlQuarto)) {
+                stmtQuarto.setString(1, tipoQuartoSelecionado); // Passando o tipo de quarto para a consulta
+                try (ResultSet rsQuarto = stmtQuarto.executeQuery()) {
+                    if (rsQuarto.next()) {
+                        precoQuarto = rsQuarto.getDouble("preco");
+                        System.out.println("Preço do Quarto: " + precoQuarto); // Apenas para verificação
+                    } else {
+                        System.out.println("Quarto não encontrado!");
+                    }
+                }
+            }
+
+            // Consultando o preço do serviço
+            try (PreparedStatement stmtServico = conn.prepareStatement(sqlServico)) {
+                stmtServico.setString(1, tipoServicoSelecionado); // Passando o tipo de serviço para a consulta
+                try (ResultSet rsServico = stmtServico.executeQuery()) {
+                    if (rsServico.next()) {
+                        precoServico = rsServico.getDouble("preco");
+                        System.out.println("Preço do Serviço: " + precoServico); // Apenas para verificação
+                    } else {
+                        System.out.println("Serviço não encontrado!");
+                    }
+                }
+            }
+
+            // Calculando o valor total (exemplo de cálculo)
+            valorTotal = precoQuarto + precoServico;
+            System.out.println("Valor Total da Reserva: " + valorTotal);
+
+            // Aqui você pode usar o valorTotal para exibir no GUI ou salvar no banco de dados
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void listarQuartos() {
@@ -164,6 +208,11 @@ public class WinReservas extends javax.swing.JFrame {
         reservarBtn.setBackground(new java.awt.Color(247, 151, 29));
         reservarBtn.setForeground(new java.awt.Color(0, 0, 0));
         reservarBtn.setText("Reservar");
+        reservarBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reservarBtnActionPerformed(evt);
+            }
+        });
 
         tbxReservas.setForeground(new java.awt.Color(0, 0, 0));
         tbxReservas.setModel(new javax.swing.table.DefaultTableModel(
@@ -226,10 +275,8 @@ public class WinReservas extends javax.swing.JFrame {
         jLabel8.setText("Data de Saída:");
 
         dataEntradaJtx.setForeground(new java.awt.Color(0, 0, 0));
-        dataEntradaJtx.setText("10/10/2005");
 
         dataSaidaJtx.setForeground(new java.awt.Color(0, 0, 0));
-        dataSaidaJtx.setText("12/10/2005");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -339,6 +386,10 @@ public class WinReservas extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void reservarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reservarBtnActionPerformed
+        fazerReserva();
+    }//GEN-LAST:event_reservarBtnActionPerformed
 
     public static void main(String args[]) {
 
