@@ -22,7 +22,7 @@ public class WinCriaQuartos extends javax.swing.JFrame {
     }
     private void carregaTabela() {
         try {
-            String[] colunasQ = {"Tipo", "Número", "preco"};
+            String[] colunasQ = {"Tipo", "Número", "Preco"};
 
             Quartos quarto = new Quartos();
 
@@ -93,8 +93,6 @@ public class WinCriaQuartos extends javax.swing.JFrame {
 
         jPanel3.setBackground(new java.awt.Color(0, 0, 0));
 
-        jLabel4.setIcon(new javax.swing.ImageIcon("C:\\Users\\WESLEYLUCASMOREIRA\\Documents\\mini hotel.jpg")); // NOI18N
-
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("ADICIONAR QUARTO");
 
@@ -130,19 +128,7 @@ public class WinCriaQuartos extends javax.swing.JFrame {
 
         jLabel2.setText("Tipo:");
 
-        txtTipo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtTipoActionPerformed(evt);
-            }
-        });
-
         jLabel3.setText("Numero:");
-
-        txtNumero.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNumeroActionPerformed(evt);
-            }
-        });
 
         jLabel5.setText("Valor:");
 
@@ -220,14 +206,6 @@ public class WinCriaQuartos extends javax.swing.JFrame {
         quarto.criar();
         carregaTabela();
     }//GEN-LAST:event_btnAdicionarQuartosActionPerformed
-
-    private void txtNumeroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNumeroActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtNumeroActionPerformed
-
-    private void txtTipoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTipoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtTipoActionPerformed
 
     public static void main(String args[]) {
       

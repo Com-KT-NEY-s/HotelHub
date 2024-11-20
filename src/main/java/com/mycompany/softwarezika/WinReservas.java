@@ -1,22 +1,27 @@
 package com.mycompany.softwarezika;
 
-import Classes.Servicos;
-import java.awt.Point;
+import Classes.Quartos;
+import DataBase.Database;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
-import org.checkerframework.checker.units.qual.t;
+import javax.swing.DefaultComboBoxModel;
 
 public class WinReservas extends javax.swing.JFrame {
-    
-    private static String diasReservados;
+
+    String diasReservadosStr = "";
+    double diasReservadosDoub;
+    double valorTotal;
 
     public WinReservas() {
         initComponents();
         reservarBtn.addActionListener(e -> exibirDiasReservados());
         // TOTAL = DIAS * V_QUARTO + SERVICOS;
+        listarQuartos();
+        listarServicos();
     }
 
     private void exibirDiasReservados() {
@@ -30,9 +35,96 @@ public class WinReservas extends javax.swing.JFrame {
 
             // Calcula a diferença em dias
             long dias = ChronoUnit.DAYS.between(dataEntrada, dataSaida);
-            
-            String diasReservadosStr = String.valueOf(diasReservados);
+
+            diasReservadosStr = String.valueOf(dias);
+            diasReservadosDoub = Double.parseDouble(diasReservadosStr);
+
         } catch (Exception e) {
+        }
+    }
+
+    private void gerarValorTotal() {
+        Quartos q = new Quartos();
+
+        double precoQ = q.getPreco();
+        //double servicoQ = 
+
+        //valorTotal = (diasReservadosDoub * precoQ) + ;
+    }
+
+    private void listarQuartos() {
+        Connection conn = Database.getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            String sql = "SELECT `tipo` FROM `quartos`";
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+
+            DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) comboQ.getModel();
+
+            model.removeAllElements();
+
+            while (rs.next()) {
+                String quarto = rs.getString("tipo");
+                model.addElement(quarto);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void listarServicos() {
+        Connection conn = Database.getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            String sql = "SELECT `tipo` FROM `servicos`";
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+
+            DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) comboS.getModel();
+
+            model.removeAllElements();
+
+            while (rs.next()) {
+                String servico = rs.getString("tipo");
+                model.addElement(servico);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -49,9 +141,9 @@ public class WinReservas extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        comboQ = new javax.swing.JComboBox<>();
         jLabel6 = new javax.swing.JLabel();
-        jComboBox2 = new javax.swing.JComboBox<>();
+        comboS = new javax.swing.JComboBox<>();
         jLabel7 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
@@ -115,14 +207,14 @@ public class WinReservas extends javax.swing.JFrame {
                         .addGap(28, 28, 28))))
         );
 
-        jComboBox1.setForeground(new java.awt.Color(0, 0, 0));
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        comboQ.setForeground(new java.awt.Color(0, 0, 0));
+        comboQ.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setText("Serviços:");
 
-        jComboBox2.setForeground(new java.awt.Color(0, 0, 0));
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        comboS.setForeground(new java.awt.Color(0, 0, 0));
+        comboS.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
         jPanel3.setForeground(new java.awt.Color(153, 51, 255));
@@ -192,8 +284,8 @@ public class WinReservas extends javax.swing.JFrame {
                                 .addGap(29, 29, 29)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jComboBox1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(comboQ, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(comboS, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(0, 7, Short.MAX_VALUE)))
                 .addContainerGap())
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -211,11 +303,11 @@ public class WinReservas extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(comboQ, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel6)
-                            .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(comboS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(46, 46, 46)
@@ -280,10 +372,10 @@ public class WinReservas extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> comboQ;
+    private javax.swing.JComboBox<String> comboS;
     private javax.swing.JTextField dataEntradaJtx;
     private javax.swing.JTextField dataSaidaJtx;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
