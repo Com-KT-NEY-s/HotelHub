@@ -13,7 +13,6 @@ import javax.swing.DefaultComboBoxModel;
 
 public class WinReservas extends javax.swing.JFrame {
 
-    String diasReservadosStr = "";
     double diasReservadosDoub;
     double valorTotal;
 
@@ -21,26 +20,42 @@ public class WinReservas extends javax.swing.JFrame {
         initComponents();
         reservarBtn.addActionListener(e -> exibirDiasReservados());
         // TOTAL = DIAS * V_QUARTO + SERVICOS;
+
+        // BUSCAR PELO CPF OU NOME
         listarQuartos();
         listarServicos();
     }
 
     private void exibirDiasReservados() {
         try {
-            // Define o formato das datas (como dd/MM/yyyy)
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            // Define o formato das datas permitindo apenas mês e dia (sem o ano)
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d");
 
-            // Obtém as datas dos campos preenchidos pelo usuário
-            LocalDate dataEntrada = LocalDate.parse(dataEntradaJtx.getText(), formatter);
-            LocalDate dataSaida = LocalDate.parse(dataSaidaJtx.getText(), formatter);
+            // Obtém o mês e dia dos campos preenchidos pelo usuário
+            String entradaData = dataEntradaJtx.getText();
+            String saidaData = dataSaidaJtx.getText();
+
+            // Pega o ano atual
+            int anoAtual = LocalDate.now().getYear();
+
+            // Adiciona o ano atual às datas fornecidas
+            entradaData = entradaData + "/" + anoAtual;
+            saidaData = saidaData + "/" + anoAtual;
+
+            // Converte para LocalDate com o ano atual
+            LocalDate dataEntrada = LocalDate.parse(entradaData, DateTimeFormatter.ofPattern("M/d/yyyy"));
+            LocalDate dataSaida = LocalDate.parse(saidaData, DateTimeFormatter.ofPattern("M/d/yyyy"));
 
             // Calcula a diferença em dias
             long dias = ChronoUnit.DAYS.between(dataEntrada, dataSaida);
 
-            diasReservadosStr = String.valueOf(dias);
-            diasReservadosDoub = Double.parseDouble(diasReservadosStr);
+            // Converte long dias para double
+            diasReservadosDoub = (double) dias;
+
+            System.out.println("Dias reservados: " + diasReservadosDoub);
 
         } catch (Exception e) {
+            e.printStackTrace(); // Adicionando o print da exceção para facilitar o debug
         }
     }
 
@@ -87,7 +102,8 @@ public class WinReservas extends javax.swing.JFrame {
             }
 
             // Calculando o valor total (exemplo de cálculo)
-            valorTotal = precoQuarto + precoServico;
+            valorTotal = (precoQuarto * diasReservadosDoub) + precoServico;
+            System.out.println("Dias reservados: " + diasReservadosDoub);
             System.out.println("Valor Total da Reserva: " + valorTotal);
 
             // Aqui você pode usar o valorTotal para exibir no GUI ou salvar no banco de dados
