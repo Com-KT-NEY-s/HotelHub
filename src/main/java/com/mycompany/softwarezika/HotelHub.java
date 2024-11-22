@@ -1,6 +1,9 @@
 package com.mycompany.softwarezika;
 
 import com.formdev.flatlaf.FlatLightLaf;
+import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.UIManager;
 
 public class HotelHub extends javax.swing.JFrame {
@@ -100,7 +103,12 @@ public class HotelHub extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        WinReservas reservas = new WinReservas();
+        WinReservas reservas = null;
+        try {
+            reservas = new WinReservas();
+        } catch (ParseException ex) {
+            Logger.getLogger(HotelHub.class.getName()).log(Level.SEVERE, null, ex);
+        }
         reservas.show();
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 

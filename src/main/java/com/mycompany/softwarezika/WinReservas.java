@@ -2,113 +2,361 @@ package com.mycompany.softwarezika;
 
 import Classes.Quartos;
 import DataBase.Database;
+import com.formdev.flatlaf.json.ParseException;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.MaskFormatter;
 
 public class WinReservas extends javax.swing.JFrame {
 
     double diasReservadosDoub;
     double valorTotal;
+    private JPopupMenu popupMenu;
+    private JPanel sugestoesPanel;
 
-    public WinReservas() {
+    public WinReservas() throws java.text.ParseException {
         initComponents();
         reservarBtn.addActionListener(e -> exibirDiasReservados());
-        // TOTAL = DIAS * V_QUARTO + SERVICOS;
+        configurarFormatadores();
 
-        // BUSCAR PELO CPF OU NOME
-        listarQuartos();
-        listarServicos();
+        hospedeJtx.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                atualizarSugestoes();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                atualizarSugestoes();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                atualizarSugestoes();
+            }
+
+            private void atualizarSugestoes() {
+                String textoDigitado = hospedeJtx.getText().trim();
+                if (!textoDigitado.isEmpty()) {
+                    listarHospedes(textoDigitado);
+                } else {
+                    sugestoesPanel.setVisible(false);
+                }
+            }
+        });
+
+        sugestoesPanel = new JPanel();
+        sugestoesPanel.setLayout(new BoxLayout(sugestoesPanel, BoxLayout.Y_AXIS));
+        sugestoesPanel.setVisible(false);
+        sugestoesPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        sugestoesPanel.setBackground(Color.WHITE);
+
+// Adicione o painel próximo ao JTextField
+        add(sugestoesPanel);
+
+    }
+
+    private void configurarSugestoesHospedes() {
+        popupMenu = new JPopupMenu();
+
+        hospedeJtx.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                String textoDigitado = hospedeJtx.getText().trim();
+                if (!textoDigitado.isEmpty()) {
+                    mostrarSugestoesHospedes(textoDigitado);
+                } else {
+                    popupMenu.setVisible(false);
+                }
+            }
+        });
+
+        hospedeJtx.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                popupMenu.setVisible(false);
+            }
+        });
+    }
+
+    private void mostrarSugestoesHospedes(String textoDigitado) {
+        popupMenu.removeAll(); // Limpa as sugestões anteriores
+
+        try (Connection conn = Database.getConnection()) {
+            String sql = "SELECT `id_hospede`, `nome` FROM `hospedes` WHERE `nome` LIKE ? LIMIT 10";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, textoDigitado + "%"); // Busca nomes que começam com o texto digitado
+                try (ResultSet rs = stmt.executeQuery()) {
+                    boolean temResultados = false;
+
+                    while (rs.next()) {
+                        temResultados = true;
+                        int idHospede = rs.getInt("id_hospede");
+                        String nomeHospede = rs.getString("nome");
+
+                        // Criar um item de menu para cada sugestão
+                        JMenuItem item = new JMenuItem(idHospede + " - " + nomeHospede);
+                        item.addActionListener(e -> {
+                            hospedeJtx.setText(nomeHospede); // Define o nome no JTextField
+                            popupMenu.setVisible(false); // Fecha o menu
+                        });
+                        popupMenu.add(item);
+                    }
+
+                    if (!temResultados) {
+                        popupMenu.setVisible(false);
+                    } else {
+                        // Exibir o popupMenu abaixo do JTextField
+                        popupMenu.show(hospedeJtx, 0, hospedeJtx.getHeight());
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao buscar sugestões de hóspedes.");
+        }
+    }
+
+    private void configurarFormatadores() throws java.text.ParseException {
+        // Criando o MaskFormatter para o formato de data (dd/MM/yyyy)
+        MaskFormatter dateFormatter = new MaskFormatter("##/##/####");
+        dateFormatter.setPlaceholderCharacter('_');
+
+        // Configurando os JFormattedTextFields com o MaskFormatter
+        dataEntradaJtx = new JFormattedTextField(dateFormatter);
+        dataSaidaJtx = new JFormattedTextField(dateFormatter);
     }
 
     private void exibirDiasReservados() {
         try {
-            // Define o formato das datas permitindo apenas mês e dia (sem o ano)
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d");
+            // Obter as entradas de data
+            String entradaData = dataEntradaJtx.getText().replace("_", "").trim();
+            String saidaData = dataSaidaJtx.getText().replace("_", "").trim();
 
-            // Obtém o mês e dia dos campos preenchidos pelo usuário
-            String entradaData = dataEntradaJtx.getText();
-            String saidaData = dataSaidaJtx.getText();
+            // Verificar se ambos os campos foram preenchidos
+            if (entradaData.length() != 10 || saidaData.length() != 10) {
+                JOptionPane.showMessageDialog(this, "Por favor, insira ambas as datas no formato dd/MM/yyyy.");
+                return;
+            }
 
-            // Pega o ano atual
-            int anoAtual = LocalDate.now().getYear();
+            // Define o formato das datas
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-            // Adiciona o ano atual às datas fornecidas
-            entradaData = entradaData + "/" + anoAtual;
-            saidaData = saidaData + "/" + anoAtual;
+            // Converte as datas para LocalDate
+            LocalDate dataEntrada = LocalDate.parse(entradaData, formatter);
+            LocalDate dataSaida = LocalDate.parse(saidaData, formatter);
 
-            // Converte para LocalDate com o ano atual
-            LocalDate dataEntrada = LocalDate.parse(entradaData, DateTimeFormatter.ofPattern("M/d/yyyy"));
-            LocalDate dataSaida = LocalDate.parse(saidaData, DateTimeFormatter.ofPattern("M/d/yyyy"));
+            // Verifica se a data de entrada é posterior à data de saída
+            if (dataEntrada.isAfter(dataSaida)) {
+                JOptionPane.showMessageDialog(this, "A data de entrada não pode ser posterior à data de saída.");
+                return;
+            }
 
             // Calcula a diferença em dias
             long dias = ChronoUnit.DAYS.between(dataEntrada, dataSaida);
-
-            // Converte long dias para double
             diasReservadosDoub = (double) dias;
 
-            System.out.println("Dias reservados: " + diasReservadosDoub);
+            // Exibe os dias reservados
+            JOptionPane.showMessageDialog(this, "Dias reservados: " + diasReservadosDoub);
+
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Data inválida! Por favor, insira as datas no formato dd/MM/yyyy.");
+        }
+    }
+
+    // Valida se o mês da data está correto (1-12)
+    private boolean validarMeses(String data) {
+        try {
+            String[] partes = data.split("/");
+
+            // Verifica se o formato está correto
+            if (partes.length < 2) {
+                return false;
+            }
+
+            int mes = Integer.parseInt(partes[0]);  // Obtém o mês
+            return mes >= 1 && mes <= 12;  // Verifica se o mês está entre 1 e 12
 
         } catch (Exception e) {
-            e.printStackTrace(); // Adicionando o print da exceção para facilitar o debug
+            return false;  // Caso a string não tenha o formato esperado
+        }
+    }
+
+    private void listarHospedes(String textoDigitado) {
+        Connection conn = Database.getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            // Consulta os hóspedes com base no texto digitado (por nome ou CPF)
+            String sql = "SELECT `id_usuario`, `nome`, `cpf` FROM `usuarios` WHERE `nome` LIKE ? OR `cpf` LIKE ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, "%" + textoDigitado + "%");
+            stmt.setString(2, "%" + textoDigitado + "%");
+            rs = stmt.executeQuery();
+
+            // Limpa as sugestões atuais
+            sugestoesPanel.removeAll();
+            sugestoesPanel.setVisible(false);
+
+            // Adiciona novos resultados ao painel de sugestões
+            while (rs.next()) {
+                int idUsuario = rs.getInt("id_usuario");
+                String nome = rs.getString("nome");
+                String cpf = rs.getString("cpf");
+
+                JLabel sugestao = new JLabel(idUsuario + " - " + nome + " (" + cpf + ")");
+                sugestao.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                sugestao.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+                // Clique na sugestão para preencher o campo
+                sugestao.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        hospedeJtx.setText(nome);
+                        sugestoesPanel.setVisible(false);
+                    }
+                });
+
+                sugestoesPanel.add(sugestao);
+            }
+
+            // Exibe o painel de sugestões se houver resultados
+            if (sugestoesPanel.getComponentCount() > 0) {
+                sugestoesPanel.setVisible(true);
+                sugestoesPanel.revalidate();
+                sugestoesPanel.repaint();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
     private void fazerReserva() {
-        // Pegando o valor selecionado no JComboBox de Quarto
+        // Pegando os valores selecionados nos ComboBoxes
         String tipoQuartoSelecionado = (String) comboQ.getSelectedItem();
-
-        // Pegando o valor selecionado no JComboBox de Serviço
         String tipoServicoSelecionado = (String) comboS.getSelectedItem();
+        String textoHospede = hospedeJtx.getText().trim();
 
-        // Variáveis para armazenar os preços
+        // Validando os valores selecionados
+        if (tipoQuartoSelecionado == null || tipoServicoSelecionado == null || textoHospede.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecione um quarto, serviço e insira um hóspede válido.");
+            return;
+        }
+
+        // Variáveis para armazenar os preços e IDs
         double precoQuarto = 0;
         double precoServico = 0;
-
-        // Consulta para pegar o preço do quarto selecionado
-        String sqlQuarto = "SELECT preco FROM quartos WHERE tipo = ?";
-        String sqlServico = "SELECT preco FROM servicos WHERE tipo = ?";
+        int idHospede = 0;
+        int idQuarto = 0;
 
         try (Connection conn = Database.getConnection()) {
-            // Consultando o preço do quarto
-            try (PreparedStatement stmtQuarto = conn.prepareStatement(sqlQuarto)) {
-                stmtQuarto.setString(1, tipoQuartoSelecionado); // Passando o tipo de quarto para a consulta
-                try (ResultSet rsQuarto = stmtQuarto.executeQuery()) {
-                    if (rsQuarto.next()) {
-                        precoQuarto = rsQuarto.getDouble("preco");
-                        System.out.println("Preço do Quarto: " + precoQuarto); // Apenas para verificação
+            // Buscar ID do hóspede baseado no texto digitado (nome ou CPF)
+            String sqlHospede = "SELECT `id_usuario` FROM `usuarios` WHERE `nome` = ? OR `cpf` = ?";
+            try (PreparedStatement stmtHospede = conn.prepareStatement(sqlHospede)) {
+                stmtHospede.setString(1, textoHospede); // Procurar pelo nome
+                stmtHospede.setString(2, textoHospede); // Procurar pelo CPF
+                try (ResultSet rsHospede = stmtHospede.executeQuery()) {
+                    if (rsHospede.next()) {
+                        idHospede = rsHospede.getInt("id_usuario");
                     } else {
-                        System.out.println("Quarto não encontrado!");
+                        JOptionPane.showMessageDialog(this, "Hóspede não encontrado! Verifique o nome ou CPF digitado.");
+                        return;
                     }
                 }
             }
 
-            // Consultando o preço do serviço
+            // Buscar preço e ID do quarto
+            String sqlQuarto = "SELECT `id_quarto`, `preco` FROM `quartos` WHERE `tipo` = ?";
+            try (PreparedStatement stmtQuarto = conn.prepareStatement(sqlQuarto)) {
+                stmtQuarto.setString(1, tipoQuartoSelecionado);
+                try (ResultSet rsQuarto = stmtQuarto.executeQuery()) {
+                    if (rsQuarto.next()) {
+                        idQuarto = rsQuarto.getInt("id_quarto");
+                        precoQuarto = rsQuarto.getDouble("preco");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Quarto não encontrado!");
+                        return;
+                    }
+                }
+            }
+
+            // Buscar preço do serviço
+            String sqlServico = "SELECT `preco` FROM `servicos` WHERE `tipo` = ?";
             try (PreparedStatement stmtServico = conn.prepareStatement(sqlServico)) {
-                stmtServico.setString(1, tipoServicoSelecionado); // Passando o tipo de serviço para a consulta
+                stmtServico.setString(1, tipoServicoSelecionado);
                 try (ResultSet rsServico = stmtServico.executeQuery()) {
                     if (rsServico.next()) {
                         precoServico = rsServico.getDouble("preco");
-                        System.out.println("Preço do Serviço: " + precoServico); // Apenas para verificação
                     } else {
-                        System.out.println("Serviço não encontrado!");
+                        JOptionPane.showMessageDialog(this, "Serviço não encontrado!");
+                        return;
                     }
                 }
             }
 
-            // Calculando o valor total (exemplo de cálculo)
+            // Calcular o valor total
             valorTotal = (precoQuarto * diasReservadosDoub) + precoServico;
-            System.out.println("Dias reservados: " + diasReservadosDoub);
-            System.out.println("Valor Total da Reserva: " + valorTotal);
 
-            // Aqui você pode usar o valorTotal para exibir no GUI ou salvar no banco de dados
+            // Inserir a reserva no banco de dados
+            String sqlInserir = "INSERT INTO `reservas` (`data_entrada`, `data_saida`, `id_hospede`, `id_quarto`) VALUES (?, ?, ?, ?)";
+            try (PreparedStatement stmtInserir = conn.prepareStatement(sqlInserir)) {
+                stmtInserir.setString(1, dataEntradaJtx.getText()); // Data de entrada como String
+                stmtInserir.setString(2, dataSaidaJtx.getText());   // Data de saída como String
+                stmtInserir.setInt(3, idHospede);
+                stmtInserir.setInt(4, idQuarto);
+
+                int linhasAfetadas = stmtInserir.executeUpdate();
+                if (linhasAfetadas > 0) {
+                    JOptionPane.showMessageDialog(this, "Reserva realizada com sucesso! Valor total: R$ " + valorTotal);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Falha ao realizar a reserva.");
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao conectar ao banco de dados.");
         }
     }
 
@@ -193,7 +441,7 @@ public class WinReservas extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        hospedeJtx = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         reservarBtn = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -216,7 +464,7 @@ public class WinReservas extends javax.swing.JFrame {
         jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("Procurar hospede:");
 
-        jTextField1.setForeground(new java.awt.Color(0, 0, 0));
+        hospedeJtx.setForeground(new java.awt.Color(0, 0, 0));
 
         jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("Escolher Quarto:");
@@ -300,14 +548,14 @@ public class WinReservas extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap(85, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4)
-                    .addComponent(dataEntradaJtx, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(dataEntradaJtx))
                 .addGap(25, 25, 25)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(dataSaidaJtx, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel8))
-                .addGap(73, 73, 73))
+                    .addComponent(jLabel8)
+                    .addComponent(dataSaidaJtx, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(61, 61, 61))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -319,7 +567,7 @@ public class WinReservas extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(dataEntradaJtx, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(dataSaidaJtx, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(dataSaidaJtx))
                 .addContainerGap(43, Short.MAX_VALUE))
         );
 
@@ -346,7 +594,7 @@ public class WinReservas extends javax.swing.JFrame {
                                     .addComponent(jLabel6))
                                 .addGap(29, 29, 29)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(hospedeJtx, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(comboQ, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(comboS, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(0, 7, Short.MAX_VALUE)))
@@ -362,7 +610,7 @@ public class WinReservas extends javax.swing.JFrame {
                         .addGap(11, 11, 11)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(hospedeJtx, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
@@ -433,7 +681,11 @@ public class WinReservas extends javax.swing.JFrame {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new WinReservas().setVisible(true);
+                try {
+                    new WinReservas().setVisible(true);
+                } catch (java.text.ParseException ex) {
+                    Logger.getLogger(WinReservas.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
@@ -443,6 +695,7 @@ public class WinReservas extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> comboS;
     private javax.swing.JTextField dataEntradaJtx;
     private javax.swing.JTextField dataSaidaJtx;
+    private javax.swing.JTextField hospedeJtx;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -455,7 +708,6 @@ public class WinReservas extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JButton reservarBtn;
     private javax.swing.JTable tbxReservas;
     // End of variables declaration//GEN-END:variables
