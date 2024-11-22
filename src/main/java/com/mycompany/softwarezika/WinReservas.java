@@ -1,14 +1,8 @@
 package com.mycompany.softwarezika;
 
-import Classes.Quartos;
 import DataBase.Database;
-import com.formdev.flatlaf.json.ParseException;
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Connection;
@@ -26,7 +20,6 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -78,72 +71,13 @@ public class WinReservas extends javax.swing.JFrame {
         sugestoesPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         sugestoesPanel.setBackground(Color.WHITE);
 
-// Adicione o painel próximo ao JTextField
+        // Adicione o painel próximo ao JTextField
         add(sugestoesPanel);
 
+        listarQuartos();
+        listarServicos();
     }
-
-    private void configurarSugestoesHospedes() {
-        popupMenu = new JPopupMenu();
-
-        hospedeJtx.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                String textoDigitado = hospedeJtx.getText().trim();
-                if (!textoDigitado.isEmpty()) {
-                    mostrarSugestoesHospedes(textoDigitado);
-                } else {
-                    popupMenu.setVisible(false);
-                }
-            }
-        });
-
-        hospedeJtx.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent e) {
-                popupMenu.setVisible(false);
-            }
-        });
-    }
-
-    private void mostrarSugestoesHospedes(String textoDigitado) {
-        popupMenu.removeAll(); // Limpa as sugestões anteriores
-
-        try (Connection conn = Database.getConnection()) {
-            String sql = "SELECT `id_hospede`, `nome` FROM `hospedes` WHERE `nome` LIKE ? LIMIT 10";
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, textoDigitado + "%"); // Busca nomes que começam com o texto digitado
-                try (ResultSet rs = stmt.executeQuery()) {
-                    boolean temResultados = false;
-
-                    while (rs.next()) {
-                        temResultados = true;
-                        int idHospede = rs.getInt("id_hospede");
-                        String nomeHospede = rs.getString("nome");
-
-                        // Criar um item de menu para cada sugestão
-                        JMenuItem item = new JMenuItem(idHospede + " - " + nomeHospede);
-                        item.addActionListener(e -> {
-                            hospedeJtx.setText(nomeHospede); // Define o nome no JTextField
-                            popupMenu.setVisible(false); // Fecha o menu
-                        });
-                        popupMenu.add(item);
-                    }
-
-                    if (!temResultados) {
-                        popupMenu.setVisible(false);
-                    } else {
-                        // Exibir o popupMenu abaixo do JTextField
-                        popupMenu.show(hospedeJtx, 0, hospedeJtx.getHeight());
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Erro ao buscar sugestões de hóspedes.");
-        }
-    }
-
+    
     private void configurarFormatadores() throws java.text.ParseException {
         // Criando o MaskFormatter para o formato de data (dd/MM/yyyy)
         MaskFormatter dateFormatter = new MaskFormatter("##/##/####");
@@ -188,24 +122,6 @@ public class WinReservas extends javax.swing.JFrame {
 
         } catch (DateTimeParseException e) {
             JOptionPane.showMessageDialog(this, "Data inválida! Por favor, insira as datas no formato dd/MM/yyyy.");
-        }
-    }
-
-    // Valida se o mês da data está correto (1-12)
-    private boolean validarMeses(String data) {
-        try {
-            String[] partes = data.split("/");
-
-            // Verifica se o formato está correto
-            if (partes.length < 2) {
-                return false;
-            }
-
-            int mes = Integer.parseInt(partes[0]);  // Obtém o mês
-            return mes >= 1 && mes <= 12;  // Verifica se o mês está entre 1 e 12
-
-        } catch (Exception e) {
-            return false;  // Caso a string não tenha o formato esperado
         }
     }
 
