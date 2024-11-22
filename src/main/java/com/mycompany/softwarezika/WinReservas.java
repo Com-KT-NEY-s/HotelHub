@@ -33,56 +33,17 @@ public class WinReservas extends javax.swing.JFrame {
 
     double diasReservadosDoub;
     double valorTotal;
-    private JPopupMenu popupMenu;
-    private JPanel sugestoesPanel;
 
     public WinReservas() throws java.text.ParseException {
         initComponents();
-        reservarBtn.addActionListener(e -> exibirDiasReservados());
+        //reservarBtn.addActionListener(e -> ;
         configurarFormatadores();
-
-        hospedeJtx.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                atualizarSugestoes();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                atualizarSugestoes();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                atualizarSugestoes();
-            }
-
-            private void atualizarSugestoes() {
-                String textoDigitado = hospedeJtx.getText().trim();
-                if (!textoDigitado.isEmpty()) {
-                    listarHospedes(textoDigitado);
-                } else {
-                    sugestoesPanel.setVisible(false);
-                }
-            }
-        });
-
-        sugestoesPanel = new JPanel();
-        sugestoesPanel.setLayout(new BoxLayout(sugestoesPanel, BoxLayout.Y_AXIS));
-        sugestoesPanel.setVisible(false);
-        sugestoesPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        sugestoesPanel.setBackground(Color.WHITE);
-
-        // Adicione o painel próximo ao JTextField
-        add(sugestoesPanel);
 
         listarQuartos();
         listarServicos();
-        
-        JDatePicker calendario = new JDatePickerImpl(datePanel, formatter);
+
     }
-    
-    
+
     private void configurarFormatadores() throws java.text.ParseException {
         // Criando o MaskFormatter para o formato de data (dd/MM/yyyy)
         MaskFormatter dateFormatter = new MaskFormatter("##/##/####");
@@ -91,107 +52,6 @@ public class WinReservas extends javax.swing.JFrame {
         // Configurando os JFormattedTextFields com o MaskFormatter
         dataEntradaJtx = new JFormattedTextField(dateFormatter);
         dataSaidaJtx = new JFormattedTextField(dateFormatter);
-    }
-
-    private void exibirDiasReservados() {
-        try {
-            // Obter as entradas de data
-            String entradaData = dataEntradaJtx.getText().replace("_", "").trim();
-            String saidaData = dataSaidaJtx.getText().replace("_", "").trim();
-
-            // Verificar se ambos os campos foram preenchidos
-            if (entradaData.length() != 10 || saidaData.length() != 10) {
-                JOptionPane.showMessageDialog(this, "Por favor, insira ambas as datas no formato dd/MM/yyyy.");
-                return;
-            }
-
-            // Define o formato das datas
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-            // Converte as datas para LocalDate
-            LocalDate dataEntrada = LocalDate.parse(entradaData, formatter);
-            LocalDate dataSaida = LocalDate.parse(saidaData, formatter);
-
-            // Verifica se a data de entrada é posterior à data de saída
-            if (dataEntrada.isAfter(dataSaida)) {
-                JOptionPane.showMessageDialog(this, "A data de entrada não pode ser posterior à data de saída.");
-                return;
-            }
-
-            // Calcula a diferença em dias
-            long dias = ChronoUnit.DAYS.between(dataEntrada, dataSaida);
-            diasReservadosDoub = (double) dias;
-
-            // Exibe os dias reservados
-            JOptionPane.showMessageDialog(this, "Dias reservados: " + diasReservadosDoub);
-
-        } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(this, "Data inválida! Por favor, insira as datas no formato dd/MM/yyyy.");
-        }
-    }
-
-    private void listarHospedes(String textoDigitado) {
-        Connection conn = Database.getConnection();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            // Consulta os hóspedes com base no texto digitado (por nome ou CPF)
-            String sql = "SELECT `id_usuario`, `nome`, `cpf` FROM `usuarios` WHERE `nome` LIKE ? OR `cpf` LIKE ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, "%" + textoDigitado + "%");
-            stmt.setString(2, "%" + textoDigitado + "%");
-            rs = stmt.executeQuery();
-
-            // Limpa as sugestões atuais
-            sugestoesPanel.removeAll();
-            sugestoesPanel.setVisible(false);
-
-            // Adiciona novos resultados ao painel de sugestões
-            while (rs.next()) {
-                int idUsuario = rs.getInt("id_usuario");
-                String nome = rs.getString("nome");
-                String cpf = rs.getString("cpf");
-
-                JLabel sugestao = new JLabel(idUsuario + " - " + nome + " (" + cpf + ")");
-                sugestao.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                sugestao.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
-                // Clique na sugestão para preencher o campo
-                sugestao.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        hospedeJtx.setText(nome);
-                        sugestoesPanel.setVisible(false);
-                    }
-                });
-
-                sugestoesPanel.add(sugestao);
-            }
-
-            // Exibe o painel de sugestões se houver resultados
-            if (sugestoesPanel.getComponentCount() > 0) {
-                sugestoesPanel.setVisible(true);
-                sugestoesPanel.revalidate();
-                sugestoesPanel.repaint();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     private void fazerReserva() {
@@ -206,11 +66,12 @@ public class WinReservas extends javax.swing.JFrame {
             return;
         }
 
-        // Variáveis para armazenar os preços e IDs
+        // Variáveis para armazenar os preços, IDs e datas
         double precoQuarto = 0;
         double precoServico = 0;
         int idHospede = 0;
         int idQuarto = 0;
+        long diasReservados = 0;
 
         try (Connection conn = Database.getConnection()) {
             // Buscar ID do hóspede baseado no texto digitado (nome ou CPF)
@@ -257,14 +118,27 @@ public class WinReservas extends javax.swing.JFrame {
                 }
             }
 
+            // Obter e validar as datas de entrada e saída
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            LocalDate dataEntrada = LocalDate.parse(dataEntradaJtx.getText().trim(), formatter);
+            LocalDate dataSaida = LocalDate.parse(dataSaidaJtx.getText().trim(), formatter);
+
+            if (dataEntrada.isAfter(dataSaida)) {
+                JOptionPane.showMessageDialog(this, "A data de entrada não pode ser posterior à data de saída.");
+                return;
+            }
+
+            // Calcular os dias reservados
+            diasReservados = ChronoUnit.DAYS.between(dataEntrada, dataSaida);
+
             // Calcular o valor total
-            valorTotal = (precoQuarto * diasReservadosDoub) + precoServico;
+            valorTotal = (precoQuarto * diasReservados) + precoServico;
 
             // Inserir a reserva no banco de dados
             String sqlInserir = "INSERT INTO `reservas` (`data_entrada`, `data_saida`, `id_hospede`, `id_quarto`) VALUES (?, ?, ?, ?)";
             try (PreparedStatement stmtInserir = conn.prepareStatement(sqlInserir)) {
-                stmtInserir.setString(1, dataEntradaJtx.getText()); // Data de entrada como String
-                stmtInserir.setString(2, dataSaidaJtx.getText());   // Data de saída como String
+                stmtInserir.setDate(1, java.sql.Date.valueOf(dataEntrada)); // Data de entrada
+                stmtInserir.setDate(2, java.sql.Date.valueOf(dataSaida));   // Data de saída
                 stmtInserir.setInt(3, idHospede);
                 stmtInserir.setInt(4, idQuarto);
 
@@ -278,6 +152,8 @@ public class WinReservas extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Erro ao conectar ao banco de dados.");
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Formato de data inválido! Por favor, use o formato dd/MM/yyyy.");
         }
     }
 
@@ -383,7 +259,7 @@ public class WinReservas extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jLabel1.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel1.setText("Procurar hospede:");
+        jLabel1.setText("Hóspede:");
 
         hospedeJtx.setForeground(new java.awt.Color(0, 0, 0));
 

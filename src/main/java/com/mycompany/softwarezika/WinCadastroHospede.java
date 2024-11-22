@@ -1,11 +1,59 @@
 package com.mycompany.softwarezika;
-import javax.swing.JFrame;
+
+import DataBase.Database;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.text.ParseException;
+import javax.swing.JFormattedTextField;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.text.MaskFormatter;
 
 public class WinCadastroHospede extends javax.swing.JFrame {
 
     public WinCadastroHospede() {
         initComponents();
+        formatarCampoCPF(cpfJtx);
     }
+
+    // Método para limpar os campos após o cadastro
+    private void limparCampos() {
+        jTextField1.setText("");
+        jTextField2.setText("");
+        cpfJtx.setText("");
+        jTextField4.setText("");
+    }
+
+    private void formatarCampoCPF(JTextField cpfJtx) {
+        try {
+            MaskFormatter cpfMask = new MaskFormatter("###.###.###-##");
+            cpfMask.setPlaceholderCharacter('_');
+
+            // Criamos um JFormattedTextField temporário com a máscara
+            JFormattedTextField formattedField = new JFormattedTextField(cpfMask);
+            formattedField.setText(cpfJtx.getText());  // Copia o texto existente (se houver)
+
+            // Substituímos o campo original pelo campo formatado
+            formattedField.setColumns(cpfJtx.getColumns());
+            formattedField.setBounds(cpfJtx.getBounds());
+            formattedField.setFont(cpfJtx.getFont());
+
+            // Remove o JTextField atual e adiciona o JFormattedTextField formatado no seu lugar
+            getContentPane().remove(cpfJtx);
+            getContentPane().add(formattedField);
+            getContentPane().revalidate();
+            getContentPane().repaint();
+
+            // Atualiza a referência para o novo campo formatado
+            this.cpfJtx = formattedField;
+
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao aplicar formatação ao CPF.");
+        }
+    }
+
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -19,10 +67,10 @@ public class WinCadastroHospede extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        cpfJtx = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         jTextField4 = new javax.swing.JTextField();
-        jButton2 = new javax.swing.JButton();
+        cadHospedeBtn = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
@@ -50,7 +98,7 @@ public class WinCadastroHospede extends javax.swing.JFrame {
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("Nome:");
 
-        jTextField3.setForeground(new java.awt.Color(0, 0, 0));
+        cpfJtx.setForeground(new java.awt.Color(0, 0, 0));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(0, 0, 0));
@@ -58,19 +106,17 @@ public class WinCadastroHospede extends javax.swing.JFrame {
 
         jTextField4.setForeground(new java.awt.Color(0, 0, 0));
 
-        jButton2.setBackground(new java.awt.Color(255, 153, 0));
-        jButton2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(0, 0, 0));
-        jButton2.setText("Cadastrar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        cadHospedeBtn.setBackground(new java.awt.Color(255, 153, 0));
+        cadHospedeBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        cadHospedeBtn.setForeground(new java.awt.Color(0, 0, 0));
+        cadHospedeBtn.setText("Cadastrar");
+        cadHospedeBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                cadHospedeBtnActionPerformed(evt);
             }
         });
 
         jPanel2.setBackground(new java.awt.Color(0, 0, 0));
-
-        jLabel8.setIcon(new javax.swing.ImageIcon("C:\\Users\\WESLEYLUCASMOREIRA\\Documents\\mini hotel.jpg")); // NOI18N
 
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("CADASTRO");
@@ -89,7 +135,7 @@ public class WinCadastroHospede extends javax.swing.JFrame {
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGap(0, 12, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jLabel8))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(27, 27, 27)
@@ -112,8 +158,8 @@ public class WinCadastroHospede extends javax.swing.JFrame {
                         .addComponent(jLabel4)
                         .addComponent(jLabel7)
                         .addComponent(jTextField4)
-                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
-                        .addComponent(jTextField3)
+                        .addComponent(cadHospedeBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                        .addComponent(cpfJtx)
                         .addComponent(jTextField2)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -131,13 +177,13 @@ public class WinCadastroHospede extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cpfJtx, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(29, 29, 29)
-                .addComponent(jButton2)
+                .addComponent(cadHospedeBtn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -157,8 +203,66 @@ public class WinCadastroHospede extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void cadHospedeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cadHospedeBtnActionPerformed
+        // Obtendo os valores dos campos
+        String nome = jTextField2.getText().trim();
+        String email = jTextField1.getText().trim();
+        String cpf = cpfJtx.getText().trim();
+        String idadeStr = jTextField4.getText().trim();
+
+        // Validando os campos
+        if (nome.isEmpty() || email.isEmpty() || cpf.isEmpty() || idadeStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos.");
+            return;
+        }
+
+        // Formatando o CPF (removendo pontos e traços)
+        cpf = cpf.replaceAll("[^\\d]", ""); // Remove caracteres que não são números
+
+        // Verificando se o CPF tem o formato correto
+        if (cpf.length() != 11) {
+            JOptionPane.showMessageDialog(this, "CPF inválido! Certifique-se de que possui 11 dígitos.");
+            return;
+        }
+
+        // Verificando se a idade é um número válido
+        int idade;
+        try {
+            idade = Integer.parseInt(idadeStr);
+            if (idade <= 0) {
+                JOptionPane.showMessageDialog(this, "Por favor, insira uma idade válida.");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Idade inválida! Insira um número inteiro.");
+            return;
+        }
+
+        // Conectando ao banco e inserindo os dados
+        try (Connection conn = Database.getConnection()) {
+            // Query para inserir o novo hóspede
+            String sqlInsert = "INSERT INTO hospedes (nome, email, cpf, idade) VALUES (?, ?, ?, ?)";
+
+            try (PreparedStatement stmt = conn.prepareStatement(sqlInsert)) {
+                stmt.setString(1, nome);
+                stmt.setString(2, email);
+                stmt.setString(3, cpf);
+                stmt.setInt(4, idade);
+
+                int rowsAffected = stmt.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(this, "Hóspede cadastrado com sucesso!");
+                    limparCampos(); // Método para limpar os campos após o cadastro
+                } else {
+                    JOptionPane.showMessageDialog(this, "Falha ao cadastrar o hóspede.");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao conectar ao banco de dados: " + e.getMessage());
+        }
+    }//GEN-LAST:event_cadHospedeBtnActionPerformed
 
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -192,7 +296,8 @@ public class WinCadastroHospede extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton cadHospedeBtn;
+    private javax.swing.JTextField cpfJtx;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -205,7 +310,6 @@ public class WinCadastroHospede extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
     // End of variables declaration//GEN-END:variables
 }
