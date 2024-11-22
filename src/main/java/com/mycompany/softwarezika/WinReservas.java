@@ -26,6 +26,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.MaskFormatter;
+import org.jdatepicker.JDatePicker;
+import org.jdatepicker.impl.JDatePickerImpl;
 
 public class WinReservas extends javax.swing.JFrame {
 
@@ -76,7 +78,10 @@ public class WinReservas extends javax.swing.JFrame {
 
         listarQuartos();
         listarServicos();
+        
+        JDatePicker calendario = new JDatePickerImpl(datePanel, formatter);
     }
+    
     
     private void configurarFormatadores() throws java.text.ParseException {
         // Criando o MaskFormatter para o formato de data (dd/MM/yyyy)
