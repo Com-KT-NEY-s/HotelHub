@@ -14,7 +14,6 @@ public class WinCadastroHospede extends javax.swing.JFrame {
 
     public WinCadastroHospede() {
         initComponents();
-        formatarCampoCPF(cpfJtx);
     }
 
     // Método para limpar os campos após o cadastro
@@ -24,36 +23,6 @@ public class WinCadastroHospede extends javax.swing.JFrame {
         cpfJtx.setText("");
         jTextField4.setText("");
     }
-
-    private void formatarCampoCPF(JTextField cpfJtx) {
-        try {
-            MaskFormatter cpfMask = new MaskFormatter("###.###.###-##");
-            cpfMask.setPlaceholderCharacter('_');
-
-            // Criamos um JFormattedTextField temporário com a máscara
-            JFormattedTextField formattedField = new JFormattedTextField(cpfMask);
-            formattedField.setText(cpfJtx.getText());  // Copia o texto existente (se houver)
-
-            // Substituímos o campo original pelo campo formatado
-            formattedField.setColumns(cpfJtx.getColumns());
-            formattedField.setBounds(cpfJtx.getBounds());
-            formattedField.setFont(cpfJtx.getFont());
-
-            // Remove o JTextField atual e adiciona o JFormattedTextField formatado no seu lugar
-            getContentPane().remove(cpfJtx);
-            getContentPane().add(formattedField);
-            getContentPane().revalidate();
-            getContentPane().repaint();
-
-            // Atualiza a referência para o novo campo formatado
-            this.cpfJtx = formattedField;
-
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Erro ao aplicar formatação ao CPF.");
-        }
-    }
-
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -67,13 +36,13 @@ public class WinCadastroHospede extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        cpfJtx = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         jTextField4 = new javax.swing.JTextField();
         cadHospedeBtn = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
+        cpfJtx = new javax.swing.JFormattedTextField();
 
         jLabel1.setText("jLabel1");
 
@@ -97,8 +66,6 @@ public class WinCadastroHospede extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("Nome:");
-
-        cpfJtx.setForeground(new java.awt.Color(0, 0, 0));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(0, 0, 0));
@@ -143,6 +110,12 @@ public class WinCadastroHospede extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        try {
+            cpfJtx.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("###.###.###-##")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -150,17 +123,16 @@ public class WinCadastroHospede extends javax.swing.JFrame {
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(47, 47, 47)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel3)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jTextField1)
-                        .addComponent(jLabel5)
-                        .addComponent(jLabel4)
-                        .addComponent(jLabel7)
-                        .addComponent(jTextField4)
-                        .addComponent(cadHospedeBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
-                        .addComponent(cpfJtx)
-                        .addComponent(jTextField2)))
+                    .addComponent(jTextField1)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel7)
+                    .addComponent(jTextField4)
+                    .addComponent(cadHospedeBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                    .addComponent(jTextField2)
+                    .addComponent(cpfJtx))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -178,13 +150,13 @@ public class WinCadastroHospede extends javax.swing.JFrame {
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cpfJtx, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(33, 33, 33)
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(29, 29, 29)
                 .addComponent(cadHospedeBtn)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -297,7 +269,7 @@ public class WinCadastroHospede extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton cadHospedeBtn;
-    private javax.swing.JTextField cpfJtx;
+    private javax.swing.JFormattedTextField cpfJtx;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
