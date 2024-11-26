@@ -7,7 +7,7 @@ package logins;
 import DataBase.Database;
 import Sexao.Sexsao;
 import cadastros.CadastroUser;
-import home.HotelHub;
+import home.HotelHubLogado;
 import home.HotelHubInitial;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -145,7 +145,7 @@ public class LoginUser extends javax.swing.JFrame {
             Sexsao.setUsuarioLogado(usuario);
             JOptionPane.showMessageDialog(this, "Login realizado com sucesso!");
             this.dispose();
-            JFrame j = new HotelHub();
+            JFrame j = new HotelHubLogado();
             j.setVisible(true);
             j.setLocationRelativeTo(null);
         } else {

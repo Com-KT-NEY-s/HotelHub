@@ -1,33 +1,29 @@
 package home;
 
 import DataBase.Database;
-import Sexao.Sexsao;
 import cadastros.CadastroUser;
 import com.formdev.flatlaf.FlatLightLaf;
-import cadastros.WinCadastroHospede;
-import cadastros.WinCriaQuartos;
-import cadastros.WinCriaServicos;
-import cadastros.WinReservas;
 import java.sql.Connection;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import logins.LoginUser;
 
+// Main class for the HotelHub application.
 public class HotelHubInitial extends javax.swing.JFrame {
 
+    // Constructor initializes the UI and checks the database connection.
     public HotelHubInitial() {
         initComponents();
-        setTitle("Hotelaria");
-        Connection conn = Database.getConnection();
-        if (conn == null) {
-            JOptionPane.showMessageDialog(rootPane, "Liga o XAMPP!");
-            System.exit(0);
+        setTitle("Hotelaria"); // Set the window title.
+        Connection conn = Database.getConnection(); // Get the database connection.
+
+        if (conn == null) { // If the connection fails, show an error message and exit.
+            JOptionPane.showMessageDialog(rootPane, "Liga o XAMPP!"); // Prompt to start XAMPP.
+            System.exit(0); // Close the application.
         }
-        setLocationRelativeTo(null);
-
+        setLocationRelativeTo(null); // Center the window on the screen.
     }
-
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -90,18 +86,20 @@ public class HotelHubInitial extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    // Event handler for the "Cadastro User" menu item.
     private void cadastroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cadastroActionPerformed
-        this.dispose();
-        JFrame j = new CadastroUser();
+        this.dispose(); // Close the current window.
+        JFrame j = new CadastroUser(); // Open the user registration window.
         j.setVisible(true);
-        j.setLocationRelativeTo(null);
+        j.setLocationRelativeTo(null); // Center the new window.
     }//GEN-LAST:event_cadastroActionPerformed
 
+    // Event handler for the "Login User" menu item.
     private void loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginActionPerformed
-        this.dispose();
-        JFrame j = new LoginUser();
+        this.dispose(); // Close the current window.
+        JFrame j = new LoginUser(); // Open the login window.
         j.setVisible(true);
-        j.setLocationRelativeTo(null);
+        j.setLocationRelativeTo(null); // Center the new window.
     }//GEN-LAST:event_loginActionPerformed
 
     public static void main(String args[]) {

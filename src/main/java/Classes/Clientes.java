@@ -1,14 +1,16 @@
 package Classes;
 
+// Class representing a client, containing attributes and methods to handle client data.
 public class Clientes {
-    
-    private String nome;
-    private int idade;
-    private String sexo;
-    private String fetiches;
-    private String email;
-    private String senha;
 
+    private String nome; // Client's name
+    private int idade; // Client's age
+    private String sexo; // Client's gender
+    private String fetiches; // Client's preferences or interests
+    private String email; // Client's email address
+    private String senha; // Client's password
+
+    // Getters and setters for each attribute
     public String getNome() {
         return nome;
     }
@@ -56,7 +58,4 @@ public class Clientes {
     public void setSenha(String senha) {
         this.senha = senha;
     }
-    
-    
-    
 }

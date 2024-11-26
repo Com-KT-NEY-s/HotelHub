@@ -1,7 +1,7 @@
 package cadastros;
 
 import Sexao.Sexsao;
-import home.HotelHub;
+import home.HotelHubLogado;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,7 +21,7 @@ public class WinCriaQuartos extends javax.swing.JFrame {
         setTitle("Cadastro de Quartos!");
         this.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
-                JFrame j = new HotelHub();
+                JFrame j = new HotelHubLogado();
                 j.setVisible(true);
                 j.setLocationRelativeTo(null);
             }

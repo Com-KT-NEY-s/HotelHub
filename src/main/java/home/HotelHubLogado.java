@@ -10,14 +10,17 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
-public class HotelHub extends javax.swing.JFrame {
+public class HotelHubLogado extends javax.swing.JFrame {
 
-    public HotelHub() {
-        initComponents();
-        setTitle(Sexsao.getUsuarioLogado() + " na questão!");
-        setLocationRelativeTo(null);
+    public HotelHubLogado() {
+        initComponents(); // Initialize UI components
+        setTitle("Employee: " + Sexsao.getUsuarioLogado()); // Set window title with logged-in user
+        setLocationRelativeTo(null); // Center the window on the screen
+
+        // Add a window listener for when the window is closed
         this.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
+                // Show the initial login screen when this window is closed
                 JFrame j = new HotelHubInitial();
                 j.setVisible(true);
                 j.setLocationRelativeTo(null);
@@ -43,8 +46,6 @@ public class HotelHub extends javax.swing.JFrame {
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.LINE_AXIS));
 
         jPanel1.setBackground(new java.awt.Color(0, 0, 0));
-
-        jLabel3.setIcon(new javax.swing.ImageIcon("C:\\Users\\WESLEYLUCASMOREIRA\\Documents\\logo muito foda.jpg")); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -120,35 +121,35 @@ public class HotelHub extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void hospedesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hospedesActionPerformed
-        this.dispose();
-        JFrame j = new WinCadastroHospede();
+        this.dispose(); // Close current window
+        JFrame j = new WinCadastroHospede(); // Open guest management
         j.setVisible(true);
         j.setLocationRelativeTo(null);
     }//GEN-LAST:event_hospedesActionPerformed
 
     private void quartosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quartosActionPerformed
-        this.dispose();
-        JFrame j = new WinCriaQuartos();
+        this.dispose(); // Close current window
+        JFrame j = new WinCriaQuartos(); // Open room management
         j.setVisible(true);
         j.setLocationRelativeTo(null);
     }//GEN-LAST:event_quartosActionPerformed
 
     private void reservasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reservasActionPerformed
-        this.dispose();
-        JFrame j = new WinReservas();
+        this.dispose(); // Close current window
+        JFrame j = new WinReservas(); // Open reservation management
         j.setVisible(true);
         j.setLocationRelativeTo(null);
     }//GEN-LAST:event_reservasActionPerformed
 
     private void servicosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_servicosActionPerformed
-        this.dispose();
-        JFrame j = new WinCriaServicos();
+        this.dispose(); // Close current window
+        JFrame j = new WinCriaServicos(); // Open service management
         j.setVisible(true);
         j.setLocationRelativeTo(null);
     }//GEN-LAST:event_servicosActionPerformed
 
     private void desconectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_desconectarActionPerformed
-        int resposta = JOptionPane.showConfirmDialog(rootPane, "Você realmente deseja desconectar " + Sexsao.getUsuarioLogado() +"?", "Desconectar", JOptionPane.YES_NO_OPTION);
+        int resposta = JOptionPane.showConfirmDialog(rootPane, "Você realmente deseja desconectar " + Sexsao.getUsuarioLogado() + "?", "Desconectar", JOptionPane.YES_NO_OPTION);
 
         if (resposta == JOptionPane.YES_OPTION) {
             // Mensagem de confirmação
@@ -177,13 +178,13 @@ public class HotelHub extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(HotelHub.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(HotelHubLogado.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(HotelHub.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(HotelHubLogado.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(HotelHub.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(HotelHubLogado.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(HotelHub.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(HotelHubLogado.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         try {
@@ -194,7 +195,7 @@ public class HotelHub extends javax.swing.JFrame {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new HotelHub().setVisible(true);
+                new HotelHubLogado().setVisible(true);
             }
         });
     }

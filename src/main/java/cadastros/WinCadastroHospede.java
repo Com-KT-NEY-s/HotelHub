@@ -1,6 +1,6 @@
 package cadastros;
 
-import home.HotelHub;
+import home.HotelHubLogado;
 import javax.swing.JFrame;
 
 public class WinCadastroHospede extends javax.swing.JFrame {
@@ -9,7 +9,7 @@ public class WinCadastroHospede extends javax.swing.JFrame {
         initComponents();
         this.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
-                JFrame j = new HotelHub();
+                JFrame j = new HotelHubLogado();
                 j.setVisible(true);
                 j.setLocationRelativeTo(null);
             }
@@ -31,7 +31,7 @@ public class WinCadastroHospede extends javax.swing.JFrame {
         jTextField3 = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         jTextField4 = new javax.swing.JTextField();
-        jButton2 = new javax.swing.JButton();
+        cadastroHospedeBtn = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
@@ -67,19 +67,17 @@ public class WinCadastroHospede extends javax.swing.JFrame {
 
         jTextField4.setForeground(new java.awt.Color(0, 0, 0));
 
-        jButton2.setBackground(new java.awt.Color(255, 153, 0));
-        jButton2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(0, 0, 0));
-        jButton2.setText("Cadastrar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        cadastroHospedeBtn.setBackground(new java.awt.Color(255, 153, 0));
+        cadastroHospedeBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        cadastroHospedeBtn.setForeground(new java.awt.Color(0, 0, 0));
+        cadastroHospedeBtn.setText("Cadastrar");
+        cadastroHospedeBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                cadastroHospedeBtnActionPerformed(evt);
             }
         });
 
         jPanel2.setBackground(new java.awt.Color(0, 0, 0));
-
-        jLabel8.setIcon(new javax.swing.ImageIcon("C:\\Users\\WESLEYLUCASMOREIRA\\Documents\\mini hotel.jpg")); // NOI18N
 
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("CADASTRO");
@@ -98,7 +96,7 @@ public class WinCadastroHospede extends javax.swing.JFrame {
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGap(0, 12, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jLabel8))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(27, 27, 27)
@@ -121,7 +119,7 @@ public class WinCadastroHospede extends javax.swing.JFrame {
                         .addComponent(jLabel4)
                         .addComponent(jLabel7)
                         .addComponent(jTextField4)
-                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                        .addComponent(cadastroHospedeBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
                         .addComponent(jTextField3)
                         .addComponent(jTextField2)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -146,7 +144,7 @@ public class WinCadastroHospede extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(29, 29, 29)
-                .addComponent(jButton2)
+                .addComponent(cadastroHospedeBtn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -166,8 +164,9 @@ public class WinCadastroHospede extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void cadastroHospedeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cadastroHospedeBtnActionPerformed
+        
+    }//GEN-LAST:event_cadastroHospedeBtnActionPerformed
 
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -201,7 +200,7 @@ public class WinCadastroHospede extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton cadastroHospedeBtn;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

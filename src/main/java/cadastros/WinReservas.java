@@ -1,7 +1,7 @@
 package cadastros;
 
 import Classes.Servicos;
-import home.HotelHub;
+import home.HotelHubLogado;
 import java.awt.Point;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
@@ -13,7 +13,7 @@ public class WinReservas extends javax.swing.JFrame {
         initComponents();
         this.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
-                JFrame j = new HotelHub();
+                JFrame j = new HotelHubLogado();
                 j.setVisible(true);
                 j.setLocationRelativeTo(null);
             }

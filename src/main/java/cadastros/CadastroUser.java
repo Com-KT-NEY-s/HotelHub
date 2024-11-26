@@ -7,23 +7,20 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.text.MaskFormatter;
 import logins.LoginUser;
 
 public class CadastroUser extends javax.swing.JFrame {
 
+    // ADICIONAR FORMATADORES E VALIDAÇÃO
     public CadastroUser() {
         initComponents();
-        formatarCampoCPF(edtCPF);
         this.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
+                // When the window is closed, show the initial hotel hub screen
                 JFrame j = new HotelHubInitial();
                 j.setVisible(true);
                 j.setLocationRelativeTo(null);
@@ -40,10 +37,10 @@ public class CadastroUser extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         edtIdade = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        edtCPF = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         btCadastro = new javax.swing.JButton();
         edtSenha = new javax.swing.JPasswordField();
+        edtCPF = new javax.swing.JFormattedTextField();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         user = new javax.swing.JMenuItem();
@@ -65,6 +62,12 @@ public class CadastroUser extends javax.swing.JFrame {
                 btCadastroActionPerformed(evt);
             }
         });
+
+        try {
+            edtCPF.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("###.###.###-##")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
 
         jMenu1.setText("Usuário");
 
@@ -96,7 +99,7 @@ public class CadastroUser extends javax.swing.JFrame {
                 .addContainerGap(120, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(btCadastro)
-                    .addGroup(layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -104,20 +107,23 @@ public class CadastroUser extends javax.swing.JFrame {
                             .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(edtIdade, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(edtNome, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(edtCPF, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(edtSenha))))
+                            .addComponent(edtSenha)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(edtIdade, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                                    .addComponent(edtNome, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                                    .addComponent(edtCPF, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE))
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap(121, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(46, Short.MAX_VALUE)
+                .addGap(22, 22, 22)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(edtNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(edtIdade, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -131,62 +137,120 @@ public class CadastroUser extends javax.swing.JFrame {
                     .addComponent(edtSenha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(btCadastro)
-                .addContainerGap(46, Short.MAX_VALUE))
+                .addContainerGap(64, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btCadastroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCadastroActionPerformed
-        String nome = edtNome.getText();
-        String idadeS = edtIdade.getText();
-        String cpf = edtCPF.getText();
-        String senha = new String(edtSenha.getPassword());
+        String nome = edtNome.getText().trim();
+        String idadeS = edtIdade.getText().trim();
+        String cpf = edtCPF.getText().trim();
+        String senha = new String(edtSenha.getPassword()).trim();
 
-        var c = new Usuarios(nome, idadeS, cpf, senha);
-        if (!nome.isEmpty() && !idadeS.isEmpty() && !cpf.isEmpty() && !senha.isEmpty()) {
-            if (usuarioExist(nome, cpf)) {
-                JOptionPane.showMessageDialog(rootPane, "Usuário " + nome + " já está Cadastrado!");
-                return;
+        // Valida os campos
+        if (!validateInputs(nome, idadeS, cpf, senha)) {
+            return;
+        }
+
+        // Verifica se o CPF já está cadastrado
+        if (usuarioExist(cpf)) {
+            JOptionPane.showMessageDialog(this, "O CPF " + cpf + " já está cadastrado.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Cadastra o usuário
+        try {
+            int idade = Integer.parseInt(idadeS);
+            Usuarios u = new Usuarios(nome, idade, cpf, senha);
+
+            if (u.inserirUser(nome, idade, cpf, senha)) {
+                JOptionPane.showMessageDialog(this, "Funcionário " + nome + " cadastrado com sucesso.");
             } else {
-                int idade = Integer.parseInt(idadeS);
-                c.inserirUser(nome, idade, cpf, senha);
-                JOptionPane.showMessageDialog(rootPane, "Usuário " + nome + " foi Adicionado com Sucesso!");
-
+                JOptionPane.showMessageDialog(this, "Erro ao cadastrar o funcionário.", "Erro", JOptionPane.ERROR_MESSAGE);
             }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Erro ao converter idade.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btCadastroActionPerformed
 
+    private boolean validateInputs(String nome, String idadeS, String cpf, String senha) {
+
+        if (nome.isEmpty() || idadeS.isEmpty() || cpf.isEmpty() || senha.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Preencha todos os campos!", "Atenção", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+
+        if (nome.length() < 3) {
+            JOptionPane.showMessageDialog(this, "Insira um nome válido.", "Atenção", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+
+        if (!idadeS.matches("\\d+")) {
+            JOptionPane.showMessageDialog(this, "Idade deve ser um número válido.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        int idade = Integer.parseInt(idadeS);
+        if (idade < 18) {
+            JOptionPane.showMessageDialog(this, "Idade deve ser maior que 18 anos.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (cpf.length() < 14 || cpf.length() > 14) {
+            JOptionPane.showMessageDialog(this, "Insira um CPF válido.", "Atenção", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+
+        if (senha.length() < 6) {
+            JOptionPane.showMessageDialog(this, "A senha deve ter pelo menos 6 caracteres.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
     private void userActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userActionPerformed
-        this.dispose();
-        JFrame j = new LoginUser();
+        this.dispose(); // Close current window
+        JFrame j = new LoginUser(); // Open login window
         j.setVisible(true);
         j.setLocationRelativeTo(null);
     }//GEN-LAST:event_userActionPerformed
 
     private void voltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_voltarActionPerformed
-        this.dispose();
-        JFrame j = new HotelHubInitial();
+        this.dispose(); // Close current window
+        JFrame j = new HotelHubInitial(); // Open hotel hub initial window
         j.setVisible(true);
         j.setLocationRelativeTo(null);
     }//GEN-LAST:event_voltarActionPerformed
-    private static boolean usuarioExist(String nome, String cpf) {
-        Connection conn = Database.getConnection();
+
+    // Check if user already exists in the database
+    private static boolean usuarioExist(String cpf) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         boolean existe = false;
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM usuarios WHERE nome = ? OR cpf = ?");
-            stmt.setString(1, nome);
-            stmt.setString(2, cpf);
+            conn = Database.getConnection();
+            // Verifica se o CPF já está cadastrado
+            stmt = conn.prepareStatement("SELECT COUNT(*) FROM usuarios WHERE cpf = ?");
+            stmt.setString(1, cpf);
+            rs = stmt.executeQuery();
 
-            ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                existe = rs.getInt(1) > 0;
+                existe = rs.getInt(1) > 0; // Se o COUNT for maior que 0, o CPF já está cadastrado
             }
         } catch (SQLException ex) {
-            Logger.getLogger(Usuarios.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CadastroUser.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
                 if (conn != null) {
                     conn.close();
                 }
@@ -196,35 +260,6 @@ public class CadastroUser extends javax.swing.JFrame {
         }
 
         return existe;
-    }
-
-    private void formatarCampoCPF(JTextField campo) {
-        try {
-            MaskFormatter cpfMask = new MaskFormatter("###.###.###-##");
-            cpfMask.setPlaceholderCharacter('_');
-
-            // Criamos um JFormattedTextField temporário com a máscara
-            JFormattedTextField formattedField = new JFormattedTextField(cpfMask);
-            formattedField.setText(campo.getText());  // Copia o texto existente (se houver)
-
-            // Substituímos o campo original pelo campo formatado
-            formattedField.setColumns(campo.getColumns());
-            formattedField.setBounds(campo.getBounds());
-            formattedField.setFont(campo.getFont());
-
-            // Remove o JTextField atual e adiciona o JFormattedTextField formatado no seu lugar
-            getContentPane().remove(campo);
-            getContentPane().add(formattedField);
-            getContentPane().revalidate();
-            getContentPane().repaint();
-
-            // Atualiza a referência para o novo campo formatado
-            this.edtCPF = formattedField;
-
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Erro ao aplicar formatação ao CPF.");
-        }
     }
 
     public static void main(String args[]) {
@@ -255,7 +290,7 @@ public class CadastroUser extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btCadastro;
-    private javax.swing.JTextField edtCPF;
+    private javax.swing.JFormattedTextField edtCPF;
     private javax.swing.JTextField edtIdade;
     private javax.swing.JTextField edtNome;
     private javax.swing.JPasswordField edtSenha;
