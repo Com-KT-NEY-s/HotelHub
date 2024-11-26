@@ -21,18 +21,11 @@
             <artifactId>mysql-connector-j</artifactId>
             <version>8.0.32</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.jdatepicker/jdatepicker -->
-        <dependency>
-            <groupId>org.jdatepicker</groupId>
-            <artifactId>jdatepicker</artifactId>
-            <version>1.3.4</version>
-        </dependency>
-
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>22</maven.compiler.source>
         <maven.compiler.target>22</maven.compiler.target>
-        <exec.mainClass>com.mycompany.softwarezika.SoftwareZika</exec.mainClass>
+        <exec.mainClass>home.HotelHubInitial</exec.mainClass>
     </properties>
 </project>
