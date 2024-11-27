@@ -1,8 +1,10 @@
 package cadastros;
 
+import DataBase.Database;
 import Sexao.Sexsao;
 import home.HotelHubLogado;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,6 +26,16 @@ public class WinCriaQuartos extends javax.swing.JFrame {
                 JFrame j = new HotelHubLogado();
                 j.setVisible(true);
                 j.setLocationRelativeTo(null);
+            }
+        });
+
+        // Adiciona o KeyListener à tabela
+        tblCriaQuartos.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_DELETE) {
+                    deleteSelectedRow(); // Método para excluir a linha selecionada
+                }
             }
         });
     }
@@ -62,24 +74,12 @@ public class WinCriaQuartos extends javax.swing.JFrame {
 
         jScrollPane1.setForeground(new java.awt.Color(0, 0, 0));
 
-        tblCriaQuartos.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Tipo", "Numero", "Valor", "Disponivel"
-            }
-        ));
+        tblCriaQuartos.setModel(tabelaQuartos);
         tblCriaQuartos.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         tblCriaQuartos.setDoubleBuffered(true);
         jScrollPane1.setViewportView(tblCriaQuartos);
 
         jPanel3.setBackground(new java.awt.Color(0, 0, 0));
-
-        jLabel4.setIcon(new javax.swing.ImageIcon("C:\\Users\\WESLEYLUCASMOREIRA\\Documents\\mini hotel.jpg")); // NOI18N
 
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("ADICIONAR QUARTO");
@@ -116,19 +116,7 @@ public class WinCriaQuartos extends javax.swing.JFrame {
 
         jLabel2.setText("Tipo:");
 
-        txtTipo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtTipoActionPerformed(evt);
-            }
-        });
-
         jLabel3.setText("Numero:");
-
-        txtNumero.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNumeroActionPerformed(evt);
-            }
-        });
 
         jLabel5.setText("Valor:");
 
@@ -192,17 +180,144 @@ public class WinCriaQuartos extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void deleteSelectedRow() {
+        int selectedRow = tblCriaQuartos.getSelectedRow(); // Obtém a linha selecionada
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Nenhuma linha selecionada para exclusão.");
+            return;
+        }
+
+        // Obtém os valores da linha selecionada (baseado nas colunas da tabela)
+        String numero = tblCriaQuartos.getValueAt(selectedRow, 1).toString(); // Número do quarto (usado como identificador)
+
+        // Confirmação de exclusão
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Tem certeza de que deseja excluir o quarto selecionado?",
+                "Confirmação de Exclusão",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            Connection conn = null;
+            PreparedStatement stmt = null;
+
+            try {
+                // Conecta ao banco de dados
+                conn = Database.getConnection();
+
+                // Exclui o registro no banco de dados
+                String sql = "DELETE FROM quartos WHERE numero = ?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setString(1, numero);
+
+                int rowsAffected = stmt.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    // Remove a linha da tabela gráfica
+                    DefaultTableModel model = (DefaultTableModel) tblCriaQuartos.getModel();
+                    model.removeRow(selectedRow);
+
+                    JOptionPane.showMessageDialog(this, "Quarto excluído com sucesso!");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Erro: Quarto não encontrado no banco de dados.");
+                }
+
+            } catch (SQLException ex) {
+                Logger.getLogger(WinCriaQuartos.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(this, "Erro ao excluir quarto: " + ex.getMessage());
+            } finally {
+                // Fecha a conexão com o banco
+                try {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                    if (conn != null) {
+                        conn.close();
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(WinCriaQuartos.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
+
+
     private void btnAdicionarQuartosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarQuartosActionPerformed
+        String tipo = txtTipo.getText();
+        String numero = txtNumero.getText();
+        String valorStr = txtValor.getText();
+
+        double valorFinalQ = Double.parseDouble(valorStr);
+
+        boolean disponivel = true;
+        String disponivelStr = "";
+
+        // Validações simples para garantir que os campos não estão vazios
+        if (tipo.isEmpty() || numero.isEmpty() || valorStr.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Por favor, preencha todos os campos.");
+            return;
+        }
+
+        if (disponivel) {
+            disponivelStr = "Disponível";
+        } else {
+            disponivelStr = "N/ Disponível";
+        }
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            // Estabelece a conexão com o banco de dados
+            conn = Database.getConnection();
+
+            // Inserção na tabela 'quartos' do banco de dados
+            String sql = "INSERT INTO quartos (tipo, numero, preco, disponivel) VALUES (?, ?, ?, ?)";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, tipo); // Tipo do quarto
+            stmt.setString(2, numero); // Número do quarto
+            stmt.setDouble(3, valorFinalQ); // Preço do quarto
+            stmt.setString(4, disponivelStr); // Disponível (assumindo que é booleano)
+
+            int rowsAffected = stmt.executeUpdate(); // Executa a inserção no banco de dados
+
+            if (rowsAffected > 0) {
+                // Atualiza a tabela da interface gráfica (tblCriaQuartos)
+                DefaultTableModel model = (DefaultTableModel) tblCriaQuartos.getModel();
+
+                model.addRow(new Object[]{tipo, numero, valorStr, disponivelStr});
+
+                JOptionPane.showMessageDialog(null, "Quarto adicionado com sucesso!");
+
+                // Limpa os campos após a inserção
+                txtTipo.setText("");
+                txtNumero.setText("");
+                txtValor.setText("");
+            } else {
+                JOptionPane.showMessageDialog(null, "Erro ao adicionar o quarto.");
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(WinCriaQuartos.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Erro ao adicionar quarto: " + ex.getMessage());
+        } finally {
+            // Fechando a conexão e o PreparedStatement para liberar os recursos
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(WinCriaQuartos.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
 
     }//GEN-LAST:event_btnAdicionarQuartosActionPerformed
-
-    private void txtNumeroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNumeroActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtNumeroActionPerformed
-
-    private void txtTipoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTipoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtTipoActionPerformed
 
     public static void main(String args[]) {
 
