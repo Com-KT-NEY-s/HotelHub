@@ -2,6 +2,7 @@ package logins;
 
 import Database.Database;
 import Sexao.Sexsao;
+import adm.WinAdmLogado;
 import cadastros.CadastroUser;
 import home.HotelHubInitial;
 import home.HotelHubLogado;
@@ -125,16 +126,25 @@ public class LoginUser extends javax.swing.JFrame {
         String cpf = edtCPF.getText().trim();
         String senha = new String(edtSenha.getPassword()).trim();
 
-        
         if (cpf.isEmpty() || senha.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Preencha todos os campos!");
             return;
         }
 
-        if (autenticarUsuario(cpf, senha)) {
+        Object[] authResult = autenticarUsuario(cpf, senha);
+        boolean autenticado = (boolean) authResult[0];
+        boolean isAdm = (boolean) authResult[1];
+
+        if (autenticado) {
             Sexsao.setUsuarioLogado(cpf);
             this.dispose();
-            JFrame j = new HotelHubLogado();
+
+            JFrame j;
+            if (isAdm) {
+                j = new WinAdmLogado(); // Se for administrador
+            } else {
+                j = new HotelHubLogado(); // Caso contrário
+            }
             j.setVisible(true);
             j.setLocationRelativeTo(null);
         } else {
@@ -142,20 +152,21 @@ public class LoginUser extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btLoginActionPerformed
 
-    private boolean autenticarUsuario(String usuario, String senha) {
+    private Object[] autenticarUsuario(String usuario, String senha) {
         Connection conn = Database.getConnection();
-        boolean autenticado = false;
+        Object[] resultado = {false, false}; // Primeiro valor: autenticado, segundo valor: is_adm
 
         try {
             PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT COUNT(*) FROM usuarios WHERE (nome = ? OR cpf = ?) AND senha = ?");
+                    "SELECT is_adm FROM usuarios WHERE (nome = ? OR cpf = ?) AND senha = ?");
             stmt.setString(1, usuario);
             stmt.setString(2, usuario);
             stmt.setString(3, senha);
 
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                autenticado = rs.getInt(1) > 0;
+                resultado[0] = true; // Autenticado
+                resultado[1] = rs.getBoolean("is_adm"); // is_adm
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -169,7 +180,7 @@ public class LoginUser extends javax.swing.JFrame {
             }
         }
 
-        return autenticado;
+        return resultado;
     }
 
     /**

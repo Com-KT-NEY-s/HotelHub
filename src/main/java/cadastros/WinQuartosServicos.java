@@ -228,17 +228,6 @@ public class WinQuartosServicos extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnAdicionarQuartosActionPerformed
 
-    private void cleanTextQ() {
-        edtTipo.setText("");
-        edtPreco.setText("");
-        edtNumero.setText("");
-    }
-    
-    private void cleanTextS() {
-        edtTipoS.setText("");
-        edtValorS.setText("");
-    }
-    
     private void btnAdicionarServicosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarServicosActionPerformed
         String tipo = edtTipoS.getText();
         String precoS = edtValorS.getText();
@@ -259,6 +248,17 @@ public class WinQuartosServicos extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnAdicionarServicosActionPerformed
 
+    private void cleanTextQ() {
+        edtTipo.setText("");
+        edtPreco.setText("");
+        edtNumero.setText("");
+    }
+    
+    private void cleanTextS() {
+        edtTipoS.setText("");
+        edtValorS.setText("");
+    }
+    
     public void listaQuartos() {
         Connection conn = Database.getConnection();
         PreparedStatement stmt = null;

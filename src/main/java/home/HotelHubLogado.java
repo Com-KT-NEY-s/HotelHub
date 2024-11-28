@@ -130,7 +130,7 @@ public class HotelHubLogado extends javax.swing.JFrame {
     }//GEN-LAST:event_quartosReservadosActionPerformed
 
     public void desconect() {
-        int resposta = JOptionPane.showConfirmDialog(rootPane, "Você realmente deseja desconectar?", "Desconectar", JOptionPane.YES_NO_OPTION);
+        int resposta = JOptionPane.showConfirmDialog(rootPane, "Você realmente deseja desconectar " + Sexsao.getNomePorCpf() +"?", "Desconectar", JOptionPane.YES_NO_OPTION);
 
         if (resposta == JOptionPane.YES_OPTION) {
             // Mensagem de confirmação

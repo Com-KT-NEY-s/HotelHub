@@ -360,6 +360,8 @@ public class WinReservas extends javax.swing.JFrame {
                                 // Atualizando disponibilidade do quarto
                                 var q = new Quartos();
                                 q.atualizarDisponibilidade(numeroQuarto, "Indisponível");
+                                //Limpando textos
+                                cleanTextQ();
                                 this.dispose();
                             }
                         }
@@ -380,11 +382,11 @@ public class WinReservas extends javax.swing.JFrame {
         edtCPF.setText("");
         edtIdade.setText("");
         edtEmail.setText("");
-        
+
         txtDataEntrada.setText("");
         txtDataSaida.setText("");
     }
-    
+
     private static boolean reservaExist(String quarto) {
         Connection conn = Database.getConnection();
         boolean existe = false;
