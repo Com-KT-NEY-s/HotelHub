@@ -38,9 +38,9 @@ public class WinQuartosServicos extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         quartos = new javax.swing.JTable();
         jLabel7 = new javax.swing.JLabel();
-        edtTipo1 = new javax.swing.JTextField();
+        edtTipoS = new javax.swing.JTextField();
         btnAdicionarQuartos = new javax.swing.JButton();
-        edtValor = new javax.swing.JTextField();
+        edtValorS = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         edtTipo = new javax.swing.JTextField();
@@ -68,8 +68,6 @@ public class WinQuartosServicos extends javax.swing.JFrame {
 
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("ADICIONAR QUARTO E SERVIÇOS");
-
-        jLabel6.setIcon(new javax.swing.ImageIcon("C:\\Users\\FELIPEEDUARDOMONARI\\Documents\\NetBeansProjects\\HotelHub-main\\images\\loguilho-hotilho.png")); // NOI18N
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -160,11 +158,11 @@ public class WinQuartosServicos extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel7)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(edtTipo1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(edtTipoS, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(156, 156, 156)
                                 .addComponent(jLabel8)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(edtValor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(edtValorS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(btnAdicionarServicos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)))))
@@ -183,10 +181,10 @@ public class WinQuartosServicos extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel2)
                         .addComponent(edtTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(edtTipo1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(edtTipoS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel7)
                         .addComponent(jLabel8)
-                        .addComponent(edtValor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(edtValorS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(edtNumero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -225,13 +223,25 @@ public class WinQuartosServicos extends javax.swing.JFrame {
                 c.inserirQuarto(tipo, numero, precoD, disponivel);
                 JOptionPane.showMessageDialog(rootPane, "Quarto N°" + numero + " foi Adicionado com Sucesso!");
                 listaQuartos();
+                cleanTextQ();
             }
         }
     }//GEN-LAST:event_btnAdicionarQuartosActionPerformed
 
+    private void cleanTextQ() {
+        edtTipo.setText("");
+        edtPreco.setText("");
+        edtNumero.setText("");
+    }
+    
+    private void cleanTextS() {
+        edtTipoS.setText("");
+        edtValorS.setText("");
+    }
+    
     private void btnAdicionarServicosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarServicosActionPerformed
-        String tipo = edtTipo1.getText();
-        String precoS = edtValor.getText();
+        String tipo = edtTipoS.getText();
+        String precoS = edtValorS.getText();
 
         var s = new Servicos(tipo, precoS);
 
@@ -244,6 +254,7 @@ public class WinQuartosServicos extends javax.swing.JFrame {
                 s.inserirServicos(tipo, precoD);
                 JOptionPane.showMessageDialog(rootPane, "Serviço: " + tipo + " foi Adicionado com Sucesso!");
                 listaServicos();
+                cleanTextS();
             }
         }
     }//GEN-LAST:event_btnAdicionarServicosActionPerformed
@@ -398,8 +409,8 @@ public class WinQuartosServicos extends javax.swing.JFrame {
     private javax.swing.JTextField edtNumero;
     private javax.swing.JTextField edtPreco;
     private javax.swing.JTextField edtTipo;
-    private javax.swing.JTextField edtTipo1;
-    private javax.swing.JTextField edtValor;
+    private javax.swing.JTextField edtTipoS;
+    private javax.swing.JTextField edtValorS;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

@@ -169,6 +169,7 @@ public class CadastroUser extends javax.swing.JFrame {
 
             if (u.inserirUser(nome, idade, cpf, senha)) {
                 JOptionPane.showMessageDialog(this, "Funcionário " + nome + " cadastrado com sucesso.");
+                cleanTextQ();
             } else {
                 JOptionPane.showMessageDialog(this, "Erro ao cadastrar o funcionário.", "Erro", JOptionPane.ERROR_MESSAGE);
             }
@@ -261,7 +262,14 @@ public class CadastroUser extends javax.swing.JFrame {
 
         return existe;
     }
-
+    
+    private void cleanTextQ() {
+        edtNome.setText("");
+        edtCPF.setText("");
+        edtIdade.setText("");
+        edtSenha.setText("");
+    }
+    
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {

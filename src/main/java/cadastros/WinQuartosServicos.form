@@ -69,11 +69,11 @@
                           <Group type="102" alignment="1" attributes="0">
                               <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="edtTipo1" min="-2" pref="200" max="-2" attributes="0"/>
+                              <Component id="edtTipoS" min="-2" pref="200" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="156" max="-2" attributes="0"/>
                               <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="edtValor" min="-2" max="-2" attributes="0"/>
+                              <Component id="edtValorS" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="103" alignment="1" groupAlignment="0" max="-2" attributes="0">
                               <Component id="btnAdicionarServicos" max="32767" attributes="0"/>
@@ -100,10 +100,10 @@
                   <Group type="103" alignment="1" groupAlignment="3" attributes="0">
                       <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="edtTipo" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="edtTipo1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="edtTipoS" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="edtValor" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="edtValorS" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="103" alignment="1" groupAlignment="0" attributes="0">
                       <Component id="edtNumero" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -179,11 +179,6 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel6">
-          <Properties>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="2" name="C:\Users\FELIPEEDUARDOMONARI\Documents\NetBeansProjects\HotelHub-main\images\loguilho-hotilho.png"/>
-            </Property>
-          </Properties>
         </Component>
       </SubComponents>
     </Container>
@@ -224,7 +219,7 @@
         <Property name="text" type="java.lang.String" value="Tipo:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="edtTipo1">
+    <Component class="javax.swing.JTextField" name="edtTipoS">
     </Component>
     <Component class="javax.swing.JButton" name="btnAdicionarQuartos">
       <Properties>
@@ -240,7 +235,7 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAdicionarQuartosActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JTextField" name="edtValor">
+    <Component class="javax.swing.JTextField" name="edtValorS">
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>

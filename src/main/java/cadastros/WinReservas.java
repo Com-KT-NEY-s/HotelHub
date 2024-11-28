@@ -375,6 +375,16 @@ public class WinReservas extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btReservarActionPerformed
 
+    private void cleanTextQ() {
+        edtNome.setText("");
+        edtCPF.setText("");
+        edtIdade.setText("");
+        edtEmail.setText("");
+        
+        txtDataEntrada.setText("");
+        txtDataSaida.setText("");
+    }
+    
     private static boolean reservaExist(String quarto) {
         Connection conn = Database.getConnection();
         boolean existe = false;
