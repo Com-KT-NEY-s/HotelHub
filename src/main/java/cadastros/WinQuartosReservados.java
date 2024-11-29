@@ -1,20 +1,44 @@
-
 package cadastros;
 
 import Database.Database;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import javax.swing.JOptionPane;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
 public class WinQuartosReservados extends javax.swing.JFrame {
-    private DefaultTableModel tabelaQuartosReservados = new DefaultTableModel(new Object[]{"Hóspede", "Quarto", "Valor", "Entrada - Saída"}, 0);
+
+    private DefaultTableModel tabelaQuartosReservados = new DefaultTableModel( new Object[]{"ID", "Hóspede", "Quarto", "Valor", "Entrada", "Saída"}, 0);
 
     public WinQuartosReservados() {
         initComponents();
         setTitle("Quartos Reservados");
         listaQuartosReservados();
         setLocationRelativeTo(null);
+
+        // Listener para alterações na tabela
+        tabelaQuartosReservados.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                if (e.getType() == TableModelEvent.UPDATE) {
+                    int row = e.getFirstRow();
+
+                    // Obtendo os valores atualizados da linha
+                    int id = Integer.parseInt(tabelaQuartosReservados.getValueAt(row, 0).toString()); // ID na primeira coluna
+                    String hospede = tabelaQuartosReservados.getValueAt(row, 1).toString();
+                    String quarto = tabelaQuartosReservados.getValueAt(row, 2).toString().replace("N°", ""); // Remove "N°"
+                    String valor = tabelaQuartosReservados.getValueAt(row, 3).toString().replace("R$", ""); // Remove "R$"
+                    String entrada = tabelaQuartosReservados.getValueAt(row, 4).toString();
+                    String saida = tabelaQuartosReservados.getValueAt(row, 5).toString();
+
+                    // Atualizando o banco de dados
+                    atualizarPelaTabelaQR(id, hospede, quarto, valor, entrada, saida);
+                }
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -86,53 +110,51 @@ public class WinQuartosReservados extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private static void atualizarPelaTabelaQR(int id, String hospede, String quarto, String preco, String dataEntrada, String dataSaida) {
+        try (Connection conn = Database.getConnection()) {
+            String query = "UPDATE quartosreservados SET hospede = ?, quarto = ?, valor = ?, data_entrada = ?, data_saida = ? WHERE id_quartoReservado = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+
+            stmt.setString(1, hospede);
+            stmt.setString(2, quarto);
+            stmt.setDouble(3, Double.parseDouble(preco));
+            stmt.setString(4, dataEntrada);
+            stmt.setString(5, dataSaida);
+            stmt.setInt(6, id);
+
+            stmt.executeUpdate();
+            System.out.println("Dados atualizados no banco de dados!");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Erro ao salvar no banco de dados: " + ex.getMessage());
+        }
+    }
+
     public void listaQuartosReservados() {
         Connection conn = Database.getConnection();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
         try {
+            String sql = "SELECT id_quartoReservado, hospede, quarto, valor, data_entrada, data_saida FROM quartosreservados";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
 
-            String sql = "SELECT hospede, quarto, valor, data_entrada, data_saida FROM quartosreservados";
-            stmt = conn.prepareStatement(sql);
-            rs = stmt.executeQuery();
-
-            DefaultTableModel model = (DefaultTableModel) quartosReservados.getModel();
-
-            model.setRowCount(0);
+            tabelaQuartosReservados.setRowCount(0);
 
             while (rs.next()) {
+                int id_QR = rs.getInt("id_quartoReservado");
                 String hospede = rs.getString("hospede");
                 String quarto = rs.getString("quarto");
                 double valor = rs.getDouble("valor");
-                String data_entrada = rs.getString("data_entrada");
-                String data_saida = rs.getString("data_saida");
-                model.addRow(new Object[]{hospede, "N°"+quarto, "R$"+valor, data_entrada + " - " + data_saida});
+                String dataEntrada = rs.getString("data_entrada");
+                String dataSaida = rs.getString("data_saida");
+                tabelaQuartosReservados.addRow(new Object[]{id_QR, hospede, "N°" + quarto, "R$" + valor, dataEntrada, dataSaida});
             }
-
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
+
     public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new WinQuartosReservados().setVisible(true);
-            }
-        });
+        java.awt.EventQueue.invokeLater(() -> new WinQuartosReservados().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

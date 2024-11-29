@@ -1,4 +1,3 @@
-
 package adm;
 
 import Database.Database;
@@ -24,13 +23,6 @@ public class WinListaFuncionarios extends javax.swing.JFrame {
         listaFuncionarios();
         setTitle("Lista de Funcionários");
         setLocationRelativeTo(null);
-        this.addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                JFrame j = new WinAdmLogado();
-                j.setVisible(true);
-                j.setLocationRelativeTo(null);
-            }
-        });
     }
 
     @SuppressWarnings("unchecked")
