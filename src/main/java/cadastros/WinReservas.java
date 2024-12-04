@@ -92,6 +92,7 @@ public class WinReservas extends javax.swing.JFrame {
         JTreservas = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
         btReservar.setBackground(new java.awt.Color(247, 151, 29));
         btReservar.setForeground(new java.awt.Color(0, 0, 0));
@@ -407,7 +408,6 @@ public class WinReservas extends javax.swing.JFrame {
                                 q.atualizarDisponibilidade(numeroQuarto, "Indisponível");
                                 //Limpando textos
                                 cleanTextQ();
-                                this.dispose();
                             }
                         }
                     }

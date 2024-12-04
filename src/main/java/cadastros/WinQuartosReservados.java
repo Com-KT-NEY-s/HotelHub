@@ -52,6 +52,7 @@ public class WinQuartosReservados extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
         quartosReservados.setModel(tabelaQuartosReservados);
         jScrollPane2.setViewportView(quartosReservados);
