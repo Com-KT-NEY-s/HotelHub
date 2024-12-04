@@ -15,14 +15,15 @@ import logins.LoginUser;
 
 public class CadastroUser extends javax.swing.JFrame {
 
-    // ADICIONAR FORMATADORES E VALIDAÇÃO
+    // Constructor to initialize the window and set closing behavior
     public CadastroUser() {
         initComponents();
         this.addWindowListener(new java.awt.event.WindowAdapter() {
+            // When the window is closed, open the initial hotel hub screen
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 JFrame j = new HotelHubInitial();
                 j.setVisible(true);
-                j.setLocationRelativeTo(null);
+                j.setLocationRelativeTo(null);  // Center the window
             }
         });
     }
@@ -147,27 +148,28 @@ public class CadastroUser extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btCadastroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCadastroActionPerformed
-        String nome = edtNome.getText().trim();
-        String idadeS = edtIdade.getText().trim();
-        String cpf = edtCPF.getText().trim();
-        String senha = new String(edtSenha.getPassword()).trim();
+        String nome = edtNome.getText().trim();  // Get the name input from the user
+        String idadeS = edtIdade.getText().trim();  // Get the age input from the user
+        String cpf = edtCPF.getText().trim();  // Get the CPF input from the user
+        String senha = new String(edtSenha.getPassword()).trim();  // Get the password input from the user
 
-        // Valida os campos
+        // Validate the input fields
         if (!validateInputs(nome, idadeS, cpf, senha)) {
-            return;
+            return;  // Exit if validation fails
         }
 
-        // Verifica se o CPF já está cadastrado
+        // Check if the CPF is already registered
         if (usuarioExist(cpf)) {
             JOptionPane.showMessageDialog(this, "O CPF " + cpf + " já está cadastrado.", "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Cadastra o usuário
+        // Register the user
         try {
-            int idade = Integer.parseInt(idadeS);
+            int idade = Integer.parseInt(idadeS);  // Convert age input to integer
             Usuarios u = new Usuarios(nome, idade, cpf, senha);
 
+            // Insert user into the database
             if (u.inserirUser(nome, idade, cpf, senha)) {
                 JOptionPane.showMessageDialog(this, "Funcionário " + nome + " cadastrado com sucesso.");
             } else {
@@ -178,18 +180,21 @@ public class CadastroUser extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btCadastroActionPerformed
 
+    // Method to validate the input fields
     private boolean validateInputs(String nome, String idadeS, String cpf, String senha) {
-
+        // Check if any fields are empty
         if (nome.isEmpty() || idadeS.isEmpty() || cpf.isEmpty() || senha.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Preencha todos os campos!", "Atenção", JOptionPane.WARNING_MESSAGE);
             return false;
         }
 
+        // Validate the name length
         if (nome.length() < 3) {
             JOptionPane.showMessageDialog(this, "Insira um nome válido.", "Atenção", JOptionPane.WARNING_MESSAGE);
             return false;
         }
 
+        // Validate if age is a valid number
         if (!idadeS.matches("\\d+")) {
             JOptionPane.showMessageDialog(this, "Idade deve ser um número válido.", "Erro", JOptionPane.ERROR_MESSAGE);
             return false;
@@ -201,11 +206,13 @@ public class CadastroUser extends javax.swing.JFrame {
             return false;
         }
 
+        // Validate CPF length
         if (cpf.length() < 14 || cpf.length() > 14) {
             JOptionPane.showMessageDialog(this, "Insira um CPF válido.", "Atenção", JOptionPane.WARNING_MESSAGE);
             return false;
         }
 
+        // Validate password length and check for spaces
         if (senha.length() < 6) {
             JOptionPane.showMessageDialog(this, "A senha deve ter pelo menos 6 caracteres.", "Erro", JOptionPane.ERROR_MESSAGE);
             return false;
@@ -215,17 +222,17 @@ public class CadastroUser extends javax.swing.JFrame {
             return false;
         }
 
-        return true;
+        return true;  // Return true if all validations pass
     }
 
     private void userActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userActionPerformed
-        this.dispose(); // Close current window
-        JFrame j = new LoginUser(); // Open login window
+        this.dispose();  // Close the current window
+        JFrame j = new LoginUser();  // Open the login window
         j.setVisible(true);
-        j.setLocationRelativeTo(null);
+        j.setLocationRelativeTo(null);  // Center the window
     }//GEN-LAST:event_userActionPerformed
 
-    // Check if user already exists in the database
+    // Method to check if a user already exists in the database by CPF
     private static boolean usuarioExist(String cpf) {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -233,34 +240,34 @@ public class CadastroUser extends javax.swing.JFrame {
         boolean existe = false;
 
         try {
-            conn = Database.getConnection();
-            // Verifica se o CPF já está cadastrado
+            conn = Database.getConnection();  // Get database connection
+            // Check if the CPF is already registered in the database
             stmt = conn.prepareStatement("SELECT COUNT(*) FROM usuarios WHERE cpf = ?");
             stmt.setString(1, cpf);
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                existe = rs.getInt(1) > 0; // Se o COUNT for maior que 0, o CPF já está cadastrado
+                existe = rs.getInt(1) > 0;  // If the count is greater than 0, the CPF already exists
             }
         } catch (SQLException ex) {
             Logger.getLogger(CadastroUser.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
                 if (rs != null) {
-                    rs.close();
+                    rs.close();  // Close the result set
                 }
                 if (stmt != null) {
-                    stmt.close();
+                    stmt.close();  // Close the statement
                 }
                 if (conn != null) {
-                    conn.close();
+                    conn.close();  // Close the database connection
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                e.printStackTrace();  // Print exception if closing fails
             }
         }
 
-        return existe;
+        return existe;  // Return whether the user exists or not
     }
 
     public static void main(String args[]) {

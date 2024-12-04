@@ -29,32 +29,33 @@ public class WinReservas extends javax.swing.JFrame {
 
     public WinReservas() {
         initComponents();
-        setTitle("Reserva de Quartos!");
-        listaQuartos();
-        listaReservas();
-        listaServicos();
-        setLocationRelativeTo(null);
+        setTitle("Reserva de Quartos!");  // Set the window title
+        listaQuartos();  // List available rooms
+        listaReservas();  // List current reservations
+        listaServicos();  // List available services
+        setLocationRelativeTo(null);  // Center the window on the screen
 
-        // Exclui linhas selecionadas
+        // Add functionality to delete selected reservations with the Delete key
         JTreservas.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-                    int selectedRow = JTreservas.getSelectedRow(); // Obtém a linha selecionada
-                    if (selectedRow != -1) {
-                        // Pegando o ID da linha selecionada (assumindo que o ID esteja na primeira coluna)
-                        int id = Integer.parseInt(JTreservas.getValueAt(selectedRow, 0).toString()); // ID na primeira coluna
+                if (e.getKeyCode() == KeyEvent.VK_DELETE) {  // Check if the Delete key was pressed
+                    int selectedRow = JTreservas.getSelectedRow();  // Get selected row
+                    if (selectedRow != -1) {  // Check if a row is selected
+                        // Get the ID of the selected reservation
+                        int id = Integer.parseInt(JTreservas.getValueAt(selectedRow, 0).toString());
 
-                        // Excluindo o item do banco de dados
+                        // Call the function to delete the reservation from the database
                         excluirPelaTabelaR(id);
 
-                        // Removendo a linha da tabela
+                        // Remove the selected row from the table
                         DefaultTableModel model = (DefaultTableModel) JTreservas.getModel();
                         model.removeRow(selectedRow);
 
-                        // Exibir uma mensagem de sucesso ou atualizar a interface
+                        // Show a message indicating successful deletion
                         JOptionPane.showMessageDialog(null, "Item excluído com sucesso.");
                     } else {
+                        // If no row is selected, show a message
                         JOptionPane.showMessageDialog(null, "Selecione uma linha para excluir.");
                     }
                 }
@@ -318,308 +319,256 @@ public class WinReservas extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    // Function to delete a reservation from the database
     private static void excluirPelaTabelaR(int id) {
-        try (Connection conn = Database.getConnection()) {  // Obtém conexão com o banco
-            String query = "DELETE FROM quartosreservados WHERE id_quartoReservado = ?";  // SQL para excluir com base no id_sabor
+        try (Connection conn = Database.getConnection()) {  // Get connection to the database
+            String query = "DELETE FROM quartosreservados WHERE id_quartoReservado = ?";  // SQL query to delete reservation
             PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setInt(1, id);  // Define o valor do placeholder (id)
+            stmt.setInt(1, id);  // Set the ID value in the query
 
-            int rowsAffected = stmt.executeUpdate();  // Executa a query e retorna o número de linhas afetadas
+            int rowsAffected = stmt.executeUpdate();  // Execute the query and check how many rows were affected
 
             if (rowsAffected > 0) {
-                System.out.println("Dados excluídos do banco de dados!");
+                System.out.println("Dados excluídos do banco de dados!");  // Print a success message
             } else {
-                System.out.println("Nenhum dado foi encontrado com o ID fornecido.");
+                System.out.println("Nenhum dado foi encontrado com o ID fornecido.");  // If no row is deleted, print a message
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Erro ao excluir do banco de dados: " + ex.getMessage());
+            JOptionPane.showMessageDialog(null, "Erro ao excluir do banco de dados: " + ex.getMessage());  // Show error message if something goes wrong
         }
     }
-    
+
+
     private void btReservarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReservarActionPerformed
-        String nome = edtNome.getText();
-        String idadeS = edtIdade.getText();
-        String cpf = edtCPF.getText();
-        String email = edtEmail.getText();
-        String quemCadastrou = Sexsao.getUsuarioLogado();
+        String nome = edtNome.getText();  // Get the name from the text field
+        String idadeS = edtIdade.getText();  // Get the age from the text field
+        String cpf = edtCPF.getText();  // Get the CPF (ID) from the text field
+        String email = edtEmail.getText();  // Get the email from the text field
+        String quemCadastrou = Sexsao.getUsuarioLogado();  // Get the logged-in user
 
-        String quarto = (String) comboQuartos.getSelectedItem();
-        String servico = (String) comboServicos.getSelectedItem();
-        String dataEntrada = txtDataEntrada.getText();
-        String dataSaida = txtDataSaida.getText();
+        String quarto = (String) comboQuartos.getSelectedItem();  // Get selected room
+        String servico = (String) comboServicos.getSelectedItem();  // Get selected service
+        String dataEntrada = txtDataEntrada.getText();  // Get entry date
+        String dataSaida = txtDataSaida.getText();  // Get exit date
 
-        // Separar os dados do combobox
+        // Split the room data to extract room price and number
         String[] quartoDados = quarto.split(" - ");
-        String valorQuarto = quartoDados[1].replace("R$", "").trim();
-        String numeroQuarto = quartoDados[2].replace("N°", "").trim();
+        String valorQuarto = quartoDados[1].replace("R$", "").trim();  // Get the price of the room
+        String numeroQuarto = quartoDados[2].replace("N°", "").trim();  // Get the room number
 
+        // Split the service data to extract service price
         String[] servicoDados = servico.split(" - ");
-        String valorServico = servicoDados[1].replace("R$", "").trim();
+        String valorServico = servicoDados[1].replace("R$", "").trim();  // Get the service price
 
+        // Convert the prices to double for calculation
         double valorQuartoD = Double.parseDouble(valorQuarto);
         double valorServicoD = Double.parseDouble(valorServico);
 
-        // Verificando se os campos obrigatórios estão preenchidos
+        // Check if all required fields are filled
         if (!nome.isEmpty() && !quarto.isEmpty() && !dataEntrada.isEmpty() && !dataSaida.isEmpty()) {
             try {
-                // Formatando as datas para comparações
+                // Format the dates for comparison
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                 LocalDate dataEntradaLocal = LocalDate.parse(dataEntrada, formatter);
                 LocalDate dataSaidaLocal = LocalDate.parse(dataSaida, formatter);
 
-                // Verificar se a data de saída não é anterior à de entrada
+                // Check if exit date is before entry date
                 if (dataSaidaLocal.isBefore(dataEntradaLocal)) {
                     JOptionPane.showMessageDialog(rootPane, "A data de saída não pode ser anterior à data de entrada.");
                     return;
                 }
-                // Calcular a quantidade de dias reservados
+
+                // Calculate the number of days reserved
                 int diasReservados = (int) ChronoUnit.DAYS.between(dataEntradaLocal, dataSaidaLocal);
-                // FINAL VALUE
+
+                // Calculate the final price for the reservation
                 double valorFinal = (diasReservados * valorQuartoD) + valorServicoD;
-                // Verificando se o quarto já está reservado
+
+                // Check if the room is already reserved
                 if (reservaExist(quarto)) {
                     JOptionPane.showMessageDialog(rootPane, "Por algum motivo o quarto N°" + numeroQuarto + " já está reservado.");
                     return;
                 } else {
+                    // Validate email format
                     if (!isEmailValido(email)) {
-                        JOptionPane.showMessageDialog(this, "Email inválidilho!");
+                        JOptionPane.showMessageDialog(this, "Email inválido!");
                         return;
                     } else {
+                        // Create a new guest and add them to the database
                         var c = new Hospedes(nome, email, cpf, idadeS, quemCadastrou);
                         if (!nome.isEmpty() && !email.isEmpty() && !cpf.isEmpty() && !idadeS.isEmpty()) {
+                            // Check if the guest already exists
                             if (hospedeExist(nome, email, cpf)) {
                                 JOptionPane.showMessageDialog(rootPane, "Hóspede " + nome + " já está Cadastrado!");
                                 return;
                             } else {
+                                // Add the guest to the database
                                 int idade = Integer.parseInt(idadeS);
                                 c.inserirHospede(nome, email, cpf, idade, quemCadastrou);
-                                // Criando a reserva
+
+                                // Create a new reservation and add it to the database
                                 var r = new Reservas(nome, quarto, servico, dataEntrada, dataSaida, valorFinal);
                                 r.inserirReserva(nome, quarto, servico, dataEntrada, dataSaida, valorFinal);
                                 JOptionPane.showMessageDialog(rootPane, "Hóspede " + nome + " reservou o quarto N°" + numeroQuarto + "!");
-                                // Atualizando lista de reservas
+
+                                // Update the reservation list in the table
                                 listaReservas();
-                                // Criando um objeto QuartosReservados
+
+                                // Create a new room reservation and add it to the database
                                 var qr = new QuartosReservados(nome, numeroQuarto, dataEntrada, dataSaida, valorFinal);
                                 qr.inserirQuartoReservado(nome, numeroQuarto, valorFinal, dataEntrada, dataSaida);
-                                // Atualizando disponibilidade do quarto
+
+                                // Update room availability to "Indisponível"
                                 var q = new Quartos();
                                 q.atualizarDisponibilidade(numeroQuarto, "Indisponível");
-                                //Limpando textos
+
+                                // Clear the text fields
                                 cleanTextQ();
                             }
                         }
                     }
                 }
             } catch (DateTimeParseException e) {
-                // Caso as datas estejam no formato errado
+                // Handle invalid date format
                 JOptionPane.showMessageDialog(rootPane, "Formato de data inválido. Use o formato dd/MM/yyyy.");
             }
         } else {
-            // Caso algum campo obrigatório esteja vazio
+            // Alert if any required field is empty
             JOptionPane.showMessageDialog(rootPane, "Todos os campos obrigatórios devem ser preenchidos.");
         }
+
     }//GEN-LAST:event_btReservarActionPerformed
 
+    // Function to clear the text fields after reservation
     private void cleanTextQ() {
-        edtNome.setText("");
-        edtCPF.setText("");
-        edtIdade.setText("");
-        edtEmail.setText("");
+        edtNome.setText("");  // Clear name field
+        edtCPF.setText("");  // Clear CPF field
+        edtIdade.setText("");  // Clear age field
+        edtEmail.setText("");  // Clear email field
 
-        txtDataEntrada.setText("");
-        txtDataSaida.setText("");
+        txtDataEntrada.setText("");  // Clear entry date field
+        txtDataSaida.setText("");  // Clear exit date field
     }
 
-    private static boolean reservaExist(String quarto) {
-        Connection conn = Database.getConnection();
+    // Function to check if the reservation exists for a given room
+    private boolean reservaExist(String quarto) {
         boolean existe = false;
-
-        try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM quartos WHERE disponivel = ?");
-            stmt.setString(1, quarto);
-
+        try (Connection conn = Database.getConnection()) {
+            // Query to check if the room is already reserved
+            String query = "SELECT COUNT(*) FROM quartos WHERE disponivel = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, quarto);  // Set room availability to the parameter
             ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
-                existe = rs.getInt(1) > 0;
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(Hospedes.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return existe;
-    }
-
-    public void listaReservas() {
-        Connection conn = Database.getConnection();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-
-            String sql = "SELECT id_reserva, hospede, quarto, servico, data_entrada, data_saida, total FROM reservas";
-            stmt = conn.prepareStatement(sql);
-            rs = stmt.executeQuery();
-
-            DefaultTableModel model = (DefaultTableModel) JTreservas.getModel();
-
-            model.setRowCount(0);
-
-            while (rs.next()) {
-                int id_reserva = rs.getInt("id_reserva");
-                String hospede = rs.getString("hospede");
-                String quarto = rs.getString("quarto");
-                String servico = rs.getString("servico");
-                String data_entrada = rs.getString("data_entrada");
-                String data_saida = rs.getString("data_saida");
-                String total = rs.getString("total");
-
-                model.addRow(new Object[]{id_reserva, hospede, quarto, servico, data_entrada, data_saida, "R$" + total});
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void listaQuartos() {
-        Connection conn = Database.getConnection();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            String sql = "SELECT id_quarto, tipo, numero, preco, disponivel FROM quartos";
-            stmt = conn.prepareStatement(sql);
-            rs = stmt.executeQuery();
-
-            DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) comboQuartos.getModel();
-
-            model.removeAllElements();
-
-            while (rs.next()) {
-                int id = rs.getInt("id_quarto");
-                String tipo = rs.getString("tipo");
-                String numero = rs.getString("numero");
-                String preco = rs.getString("preco");
-                String disponivel = rs.getString("disponivel");
-                if (!disponivel.equals("Indisponível")) {
-                    model.addElement(tipo + " - R$" + preco + " - N°" + numero);
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void listaServicos() {
-        Connection conn = Database.getConnection();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            String sql = "SELECT id_servico, tipo, preco FROM servicos";
-            stmt = conn.prepareStatement(sql);
-            rs = stmt.executeQuery();
-
-            DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) comboServicos.getModel();
-
-            model.removeAllElements();
-
-            while (rs.next()) {
-                int id = rs.getInt("id_servico");
-                String tipo = rs.getString("tipo");
-                String preco = rs.getString("preco");
-                model.addElement(tipo + " - R$" + preco);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private static boolean hospedeExist(String nome, String email, String cpf) {
-        Connection conn = Database.getConnection();
-        boolean existe = false;
-
-        try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM hospedes WHERE nome = ? OR email = ? OR cpf = ?");
-            stmt.setString(1, nome);
-            stmt.setString(2, email);
-            stmt.setString(3, cpf);
-
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                existe = rs.getInt(1) > 0;
+                existe = rs.getInt(1) > 0;  // If count is greater than 0, the room is reserved
             }
         } catch (SQLException ex) {
             Logger.getLogger(WinReservas.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
-
         return existe;
     }
 
-    private boolean isEmailValido(String email) {
-        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
-        return Pattern.matches(emailRegex, email);
+    // Function to list all current reservations and display them in a table
+    private void listaReservas() {
+        try (Connection conn = Database.getConnection()) {
+            String query = "SELECT * FROM reservas";  // SQL query to fetch all reservations
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
+
+            // Clear the table before displaying new data
+            tabelaReservas.setRowCount(0);
+
+            while (rs.next()) {
+                // Get data from the database result
+                int id = rs.getInt("id");
+                String hospede = rs.getString("hospede");
+                String quarto = rs.getString("quarto");
+                String servicos = rs.getString("servicos");
+                String dataEntrada = rs.getString("data_entrada");
+                String dataSaida = rs.getString("data_saida");
+                double total = rs.getDouble("total");
+
+                // Add the data to the table model (which displays it in the JTable)
+                tabelaReservas.addRow(new Object[]{id, hospede, quarto, servicos, dataEntrada, dataSaida, total});
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(WinReservas.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Erro ao carregar as reservas: " + ex.getMessage());
+        }
+    }
+
+    // Function to list all available rooms and display them in a combo box
+    private void listaQuartos() {
+        try (Connection conn = Database.getConnection()) {
+            String query = "SELECT * FROM quartos WHERE disponivel = 'Disponível'";  // SQL query to get available rooms
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
+
+            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();  // Combo box model to hold room data
+
+            // Loop through result set and add rooms to the combo box
+            while (rs.next()) {
+                String numeroQuarto = rs.getString("numero");
+                String preco = rs.getString("preco");
+                model.addElement("Quarto N°" + numeroQuarto + " - R$ " + preco);  // Add formatted room info
+            }
+
+            comboQuartos.setModel(model);  // Set the combo box model
+        } catch (SQLException ex) {
+            Logger.getLogger(WinReservas.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Erro ao carregar os quartos: " + ex.getMessage());
+        }
+    }
+
+    // Function to list all available services and display them in a combo box
+    private void listaServicos() {
+        try (Connection conn = Database.getConnection()) {
+            String query = "SELECT * FROM servicos";  // SQL query to get all services
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
+
+            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();  // Combo box model to hold service data
+
+            // Loop through result set and add services to the combo box
+            while (rs.next()) {
+                String nomeServico = rs.getString("nome");
+                String precoServico = rs.getString("preco");
+                model.addElement(nomeServico + " - R$ " + precoServico);  // Add formatted service info
+            }
+
+            comboServicos.setModel(model);  // Set the combo box model
+        } catch (SQLException ex) {
+            Logger.getLogger(WinReservas.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Erro ao carregar os serviços: " + ex.getMessage());
+        }
+    }
+
+    // Function to check if a guest already exists in the database based on their details
+    private boolean hospedeExist(String nome, String email, String cpf) {
+        boolean existe = false;
+        try (Connection conn = Database.getConnection()) {
+            String query = "SELECT COUNT(*) FROM hospedes WHERE nome = ? OR email = ? OR cpf = ?";  // SQL query to check if guest exists
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, nome);
+            stmt.setString(2, email);
+            stmt.setString(3, cpf);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                existe = rs.getInt(1) > 0;  // If count is greater than 0, the guest already exists
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(WinReservas.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return existe;
+    }
+
+    // Function to validate the email format
+    public boolean isEmailValido(String email) {
+        String regex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        return Pattern.matches(regex, email);  // Check if the email matches the regex pattern
     }
 
     public static void main(String args[]) {

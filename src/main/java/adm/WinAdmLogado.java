@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package adm;
 
 import Sexao.Sexsao;
@@ -13,19 +9,12 @@ import home.HotelHubLogado;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-/**
- *
- * @author FELIPEEDUARDOMONARI
- */
 public class WinAdmLogado extends javax.swing.JFrame {
 
-    /**
-     * Creates new form WinAdmLogado
-     */
+    // Constructor to initialize the window and set the title with the admin's name
     public WinAdmLogado() {
-        initComponents();
-        setTitle("Administrador(a): " + Sexsao.getNomePorCpf());
-
+        initComponents();  // Initialize GUI components
+        setTitle("Administrador(a): " + Sexsao.getNomePorCpf());  // Set the title with admin's name
     }
 
     /**
@@ -172,24 +161,25 @@ public class WinAdmLogado extends javax.swing.JFrame {
         j.setLocationRelativeTo(null);
     }//GEN-LAST:event_quartosReservadosActionPerformed
 
+    // Method to handle the disconnect action
     public void desconect() {
-        int resposta = JOptionPane.showConfirmDialog(rootPane, "Você realmente deseja desconectar " + Sexsao.getNomePorCpf() +"?", "Desconectar", JOptionPane.YES_NO_OPTION);
+        // Show a confirmation dialog asking if the user wants to disconnect
+        int resposta = JOptionPane.showConfirmDialog(rootPane, "Você realmente deseja desconectar " + Sexsao.getNomePorCpf() + "?", "Desconectar", JOptionPane.YES_NO_OPTION);
 
+        // If the user confirms disconnect, show a success message and open the login screen
         if (resposta == JOptionPane.YES_OPTION) {
-            // Mensagem de confirmação
-            JOptionPane.showMessageDialog(rootPane, "Desconectado com sucesso!");
-
-            // Chama a tela inicial de login
-            JFrame j = new HotelHubInitial();
+            JOptionPane.showMessageDialog(rootPane, "Desconectado com sucesso!");  // Success message
+            JFrame j = new HotelHubInitial();  // Open the initial login screen
             j.setVisible(true);
-            j.setLocationRelativeTo(null);
-        }else{
-            // Chama a tela logado
+            j.setLocationRelativeTo(null);  // Center the window on the screen
+        } else {
+            // If the user cancels, reopen the logged-in screen
             JFrame j = new HotelHubLogado();
             j.setVisible(true);
-            j.setLocationRelativeTo(null);
+            j.setLocationRelativeTo(null);  // Center the window on the screen
         }
     }
+
     /**
      * @param args the command line arguments
      */

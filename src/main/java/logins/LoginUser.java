@@ -1,3 +1,4 @@
+
 package logins;
 
 import Database.Database;
@@ -13,15 +14,18 @@ import java.sql.SQLException;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+
 public class LoginUser extends javax.swing.JFrame {
 
+    // Constructor to initialize the login window and set the closing behavior
     public LoginUser() {
-        initComponents();
+        initComponents();  // Initialize GUI components
         this.addWindowListener(new java.awt.event.WindowAdapter() {
+            // When the window is closed, open the initial hotel hub screen
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 JFrame j = new HotelHubInitial();
                 j.setVisible(true);
-                j.setLocationRelativeTo(null);
+                j.setLocationRelativeTo(null);  // Center the window
             }
         });
     }
@@ -124,103 +128,108 @@ public class LoginUser extends javax.swing.JFrame {
     }//GEN-LAST:event_userActionPerformed
 
     private void btLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btLoginActionPerformed
-        String cpf = edtCPF.getText().trim();
-        String senha = new String(edtSenha.getPassword()).trim();
+        String cpf = edtCPF.getText().trim();  // Get the CPF input from the user
+        String senha = new String(edtSenha.getPassword()).trim();  // Get the password input from the user
 
+        // Check if CPF or password is empty
         if (cpf.isEmpty() || senha.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Preencha todos os campos!");
+            JOptionPane.showMessageDialog(this, "Preencha todos os campos!");  // Show an error message
             return;
         }
 
+        // Authenticate the user using CPF and password
         Object[] authResult = autenticarUsuario(cpf, senha);
-        boolean autenticado = (boolean) authResult[0];
-        boolean isAdm = (boolean) authResult[1];
+        boolean autenticado = (boolean) authResult[0];  // True if authenticated
+        boolean isAdm = (boolean) authResult[1];  // True if the user is an administrator
 
+        // If authenticated, proceed to the correct screen
         if (autenticado) {
-            Sexsao.setUsuarioLogado(cpf);
-            this.dispose();
+            Sexsao.setUsuarioLogado(cpf);  // Set the logged-in user
+            this.dispose();  // Close the login window
 
             JFrame j;
+            // Redirect based on user role (Admin or regular user)
             if (isAdm) {
-                j = new WinAdmLogado(); // Se for administrador
+                j = new WinAdmLogado();  // Admin screen
             } else {
-                j = new HotelHubLogado(); // Caso contrário
+                j = new HotelHubLogado();  // Regular user screen
             }
             j.setVisible(true);
-            j.setLocationRelativeTo(null);
+            j.setLocationRelativeTo(null);  // Center the window
         } else {
-            JOptionPane.showMessageDialog(this, "Usuário ou senha incorretos.");
+            JOptionPane.showMessageDialog(this, "Usuário ou senha incorretos.");  // Show error if authentication fails
         }
     }//GEN-LAST:event_btLoginActionPerformed
 
     private Object[] autenticarUsuario(String usuario, String senha) {
-        Connection conn = Database.getConnection();
-        Object[] resultado = {false, false}; // Primeiro valor: autenticado, segundo valor: is_adm
+        Connection conn = Database.getConnection();  // Get database connection
+        Object[] resultado = {false, false};  // First value: authentication status, second: is_adm status
 
         try {
+            // SQL query to check if the user exists and if the password matches
             PreparedStatement stmt = conn.prepareStatement(
                     "SELECT is_adm FROM usuarios WHERE (nome = ? OR cpf = ?) AND senha = ?");
-            stmt.setString(1, usuario);
-            stmt.setString(2, usuario);
-            stmt.setString(3, senha);
+            stmt.setString(1, usuario);  // Set username
+            stmt.setString(2, usuario);  // Set CPF
+            stmt.setString(3, senha);    // Set password
 
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                resultado[0] = true; // Autenticado
-                resultado[1] = rs.getBoolean("is_adm"); // is_adm
+                resultado[0] = true;  // User authenticated
+                resultado[1] = rs.getBoolean("is_adm");  // Set user role (admin or not)
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            ex.printStackTrace();  // Print exception if any error occurs
         } finally {
             try {
                 if (conn != null) {
-                    conn.close();
+                    conn.close();  // Close the database connection
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                e.printStackTrace();  // Print exception if closing fails
             }
         }
 
-        return resultado;
+        return resultado;  // Return the authentication result
     }
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+    /* Set the Nimbus look and feel */
+    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+    /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
+     */
+    try {
+        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            if ("Nimbus".equals(info.getName())) {
+                javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                break;
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(LoginUser.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(LoginUser.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(LoginUser.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(LoginUser.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new LoginUser().setVisible(true);
-            }
-        });
+    } catch (ClassNotFoundException ex) {
+        java.util.logging.Logger.getLogger(LoginUser.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (InstantiationException ex) {
+        java.util.logging.Logger.getLogger(LoginUser.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (IllegalAccessException ex) {
+        java.util.logging.Logger.getLogger(LoginUser.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        java.util.logging.Logger.getLogger(LoginUser.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
     }
+    //</editor-fold>
+    //</editor-fold>
+    //</editor-fold>
+    //</editor-fold>
+
+    /* Create and display the form */
+    java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+            new LoginUser().setVisible(true);
+        }
+    });
+}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btLogin;

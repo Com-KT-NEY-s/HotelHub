@@ -1,3 +1,4 @@
+
 package adm;
 
 import Database.Database;
@@ -14,15 +15,18 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
+
 public class WinListaFuncionarios extends javax.swing.JFrame {
 
+    // DefaultTableModel to define the table structure for displaying employee data
     private DefaultTableModel tabelaFuncionarios = new DefaultTableModel(new Object[]{"Nome", "Idade", "CPF", "Administrador(a)"}, 0);
 
+    // Constructor to initialize the components and list employees
     public WinListaFuncionarios() {
-        initComponents();
-        listaFuncionarios();
-        setTitle("Lista de Funcionários");
-        setLocationRelativeTo(null);
+        initComponents();  // Initialize GUI components
+        listaFuncionarios();  // Load the employee data into the table
+        setTitle("Lista de Funcionários");  // Set the window title
+        setLocationRelativeTo(null);  // Center the window on the screen
     }
 
     @SuppressWarnings("unchecked")
@@ -167,31 +171,36 @@ public class WinListaFuncionarios extends javax.swing.JFrame {
         desconect();
     }//GEN-LAST:event_desconectarActionPerformed
 
+    // Method to retrieve employee data from the database and populate the table
     public void listaFuncionarios() {
+        // Create database connection
         Connection conn = Database.getConnection();
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-
+            // SQL query to select employee data
             String sql = "SELECT nome, idade, cpf, is_adm FROM usuarios";
             stmt = conn.prepareStatement(sql);
             rs = stmt.executeQuery();
 
+            // Get the table model to update it
             DefaultTableModel model = (DefaultTableModel) funcionarios.getModel();
 
-            model.setRowCount(0);
+            model.setRowCount(0);  // Clear existing rows in the table
 
+            // Iterate through the result set and add data to the table
             while (rs.next()) {
                 String nome = rs.getString("nome");
                 String idade = rs.getString("idade");
                 String cpf = rs.getString("cpf");
                 String is_adm = rs.getString("is_adm");
 
-                model.addRow(new Object[]{nome, idade, cpf, is_adm});
+                model.addRow(new Object[]{nome, idade, cpf, is_adm});  // Add a new row with employee data
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace();  // Print any exception to the console
         } finally {
+            // Close database resources
             try {
                 if (rs != null) {
                     rs.close();
@@ -203,61 +212,61 @@ public class WinListaFuncionarios extends javax.swing.JFrame {
                     conn.close();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                e.printStackTrace();  // Print any exception to the console
             }
         }
     }
 
+    // Method to handle the disconnect action
     public void desconect() {
+        // Show a confirmation dialog asking if the user wants to disconnect
         int resposta = JOptionPane.showConfirmDialog(rootPane, "Você realmente deseja desconectar " + Sexsao.getNomePorCpf() + "?", "Desconectar", JOptionPane.YES_NO_OPTION);
 
+        // If the user confirms, show a success message and open the login screen
         if (resposta == JOptionPane.YES_OPTION) {
-            // Mensagem de confirmação
-            JOptionPane.showMessageDialog(rootPane, "Desconectado com sucesso!");
-
-            // Chama a tela inicial de login
-            JFrame j = new HotelHubInitial();
+            JOptionPane.showMessageDialog(rootPane, "Desconectado com sucesso!");  // Success message
+            JFrame j = new HotelHubInitial();  // Open the initial login screen
             j.setVisible(true);
-            j.setLocationRelativeTo(null);
+            j.setLocationRelativeTo(null);  // Center the window on the screen
         } else {
-            // Chama a tela logado
+            // If the user cancels, reopen the logged-in screen
             JFrame j = new HotelHubLogado();
             j.setVisible(true);
-            j.setLocationRelativeTo(null);
+            j.setLocationRelativeTo(null);  // Center the window on the screen
         }
     }
 
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+    /* Set the Nimbus look and feel */
+    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+    /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
+     */
+    try {
+        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            if ("Nimbus".equals(info.getName())) {
+                javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                break;
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(WinListaFuncionarios.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(WinListaFuncionarios.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(WinListaFuncionarios.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(WinListaFuncionarios.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new WinListaFuncionarios().setVisible(true);
-            }
-        });
+    } catch (ClassNotFoundException ex) {
+        java.util.logging.Logger.getLogger(WinListaFuncionarios.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (InstantiationException ex) {
+        java.util.logging.Logger.getLogger(WinListaFuncionarios.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (IllegalAccessException ex) {
+        java.util.logging.Logger.getLogger(WinListaFuncionarios.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        java.util.logging.Logger.getLogger(WinListaFuncionarios.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
     }
+    //</editor-fold>
+
+    /* Create and display the form */
+    java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+            new WinListaFuncionarios().setVisible(true);
+        }
+    });
+}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem desconectar;

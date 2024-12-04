@@ -1,13 +1,11 @@
 package home;
 
 import Sexao.Sexsao;
-import com.formdev.flatlaf.FlatLightLaf;
 import cadastros.WinQuartosServicos;
 import cadastros.WinQuartosReservados;
 import cadastros.WinReservas;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.UIManager;
 
 public class HotelHubLogado extends javax.swing.JFrame {
 

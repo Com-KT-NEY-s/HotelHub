@@ -11,6 +11,7 @@ public class Quartos {
 
     private String tipo, numero, preco, disponivel;
 
+    // Getter and Setter for 'tipo'
     public String getTipo() {
         return tipo;
     }
@@ -19,6 +20,7 @@ public class Quartos {
         this.tipo = tipo;
     }
 
+    // Getter and Setter for 'numero'
     public String getNumero() {
         return numero;
     }
@@ -27,6 +29,7 @@ public class Quartos {
         this.numero = numero;
     }
 
+    // Getter and Setter for 'preco'
     public String getPreco() {
         return preco;
     }
@@ -35,6 +38,7 @@ public class Quartos {
         this.preco = preco;
     }
 
+    // Getter and Setter for 'disponivel'
     public String getDisponivel() {
         return disponivel;
     }
@@ -43,40 +47,48 @@ public class Quartos {
         this.disponivel = disponivel;
     }
 
+    // Method to insert a new room into the database
     public void inserirQuarto(String tipo, String numero, double preco, String disponivel) {
         Connection conn = Database.getConnection();
         try {
+            // SQL query to insert data into quartos table
             PreparedStatement stmt = conn.prepareStatement("INSERT INTO quartos (tipo, numero, preco, disponivel) VALUES (?, ?, ?, ?)");
-            stmt.setString(1, tipo);
-            stmt.setString(2, numero);
-            stmt.setDouble(3, preco);
-            stmt.setString(4, disponivel);
+            stmt.setString(1, tipo); // Set 'tipo' parameter
+            stmt.setString(2, numero); // Set 'numero' parameter
+            stmt.setDouble(3, preco); // Set 'preco' parameter
+            stmt.setString(4, disponivel); // Set 'disponivel' parameter
 
-            stmt.execute();
+            stmt.execute(); // Execute the query
 
         } catch (SQLException ex) {
+            // Log the error in case of an exception
             Logger.getLogger(Quartos.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    // Method to update the availability of a room
     public void atualizarDisponibilidade(String numero, String disponivel) {
         Connection conn = Database.getConnection();
         PreparedStatement stmt = null;
         try {
-            // Comando SQL para atualizar apenas o campo "disponivel"
+            // SQL query to update 'disponivel' column
             stmt = conn.prepareStatement("UPDATE quartos SET disponivel = ? WHERE numero = ?");
-            stmt.setString(1, disponivel); // Novo valor para "disponivel"
-            stmt.setString(2, numero);    // Critério para identificar o quarto (número)
+            stmt.setString(1, disponivel); // New value for 'disponivel'
+            stmt.setString(2, numero); // Room identifier (numero)
 
-            // Executa o comando de atualização
-            int rowsUpdated = stmt.executeUpdate();
+            int rowsUpdated = stmt.executeUpdate(); // Execute the update query
+
+            // Check if any rows were updated
             if (rowsUpdated > 0) {
+                // Update successful
             } else {
+                // No rows were updated
             }
         } catch (SQLException ex) {
+            // Log the error in case of an exception
             Logger.getLogger(Quartos.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-            // Fechar os recursos
+            // Close resources
             try {
                 if (stmt != null) {
                     stmt.close();
@@ -89,5 +101,4 @@ public class Quartos {
             }
         }
     }
-
 }

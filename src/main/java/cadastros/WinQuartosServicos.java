@@ -14,17 +14,17 @@ import javax.swing.table.DefaultTableModel;
 
 public class WinQuartosServicos extends javax.swing.JFrame {
 
+    // DefaultTableModels to hold room and service data for display
     private DefaultTableModel tabelaQuartos = new DefaultTableModel(new Object[]{"Tipo", "Número", "Preço", "Disponibilidade"}, 0);
     private DefaultTableModel tabelaServicos = new DefaultTableModel(new Object[]{"Tipo", "Preço"}, 0);
 
     public WinQuartosServicos() {
         initComponents();
-        listaQuartos();
-        listaServicos();
-        setTitle("Quartos e Serviços");
-        setLocationRelativeTo(null);
+        listaQuartos();  // List all rooms
+        listaServicos();  // List all services
+        setTitle("Quartos e Serviços");  // Set the title for the window
+        setLocationRelativeTo(null);  // Center the window on the screen
     }
-
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -212,75 +212,87 @@ public class WinQuartosServicos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAdicionarQuartosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarQuartosActionPerformed
-        String tipo = edtTipo.getText();
-        String numero = edtNumero.getText();
-        String preco = edtPreco.getText();
-        String disponivel = "Disponível";
+        String tipo = edtTipo.getText();  // Get room type
+        String numero = edtNumero.getText();  // Get room number
+        String preco = edtPreco.getText();  // Get room price
+        String disponivel = "Disponível";  // Room availability is initially "Available"
+
+        // Create a new Quartos object and set its properties
         var c = new Quartos();
         c.setTipo(tipo);
         c.setNumero(numero);
         c.setPreco(preco);
         c.setDisponivel(disponivel);
 
+        // Validate inputs
         if (!tipo.isEmpty() && !numero.isEmpty() && !preco.isEmpty() && !disponivel.isEmpty()) {
             if (quartoExist(numero)) {
-                JOptionPane.showMessageDialog(rootPane, "O quarto N°" + numero + " já está Cadastrado!");
+                JOptionPane.showMessageDialog(rootPane, "O quarto N°" + numero + " já está Cadastrado!");  // Notify if room exists
                 return;
             } else {
+                // Convert price to double and insert the room into the database
                 double precoD = Double.parseDouble(preco);
                 c.inserirQuarto(tipo, numero, precoD, disponivel);
-                JOptionPane.showMessageDialog(rootPane, "Quarto N°" + numero + " foi Adicionado com Sucesso!");
-                listaQuartos();
-                cleanTextQ();
+                JOptionPane.showMessageDialog(rootPane, "Quarto N°" + numero + " foi Adicionado com Sucesso!");  // Success message
+                listaQuartos();  // Refresh the room list
+                cleanTextQ();  // Clean input fields
             }
         }
+
     }//GEN-LAST:event_btnAdicionarQuartosActionPerformed
 
     private void btnAdicionarServicosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarServicosActionPerformed
-        String tipo = edtTipoS.getText();
-        String precoS = edtValorS.getText();
+        String tipo = edtTipoS.getText();  // Get service type
+        String precoS = edtValorS.getText();  // Get service price
 
         var s = new Servicos(tipo, precoS);
 
+        // Validate inputs
         if (!tipo.isEmpty() && !precoS.isEmpty()) {
             if (servicoExist(tipo)) {
-                JOptionPane.showMessageDialog(rootPane, "O serviço: " + tipo + " já está Cadastrado!");
+                JOptionPane.showMessageDialog(rootPane, "O serviço: " + tipo + " já está Cadastrado!");  // Notify if service exists
                 return;
             } else {
+                // Convert price to double and insert the service into the database
                 double precoD = Double.parseDouble(precoS);
                 s.inserirServicos(tipo, precoD);
-                JOptionPane.showMessageDialog(rootPane, "Serviço: " + tipo + " foi Adicionado com Sucesso!");
-                listaServicos();
-                cleanTextS();
+                JOptionPane.showMessageDialog(rootPane, "Serviço: " + tipo + " foi Adicionado com Sucesso!");  // Success message
+                listaServicos();  // Refresh the service list
+                cleanTextS();  // Clean input fields
             }
         }
+
     }//GEN-LAST:event_btnAdicionarServicosActionPerformed
 
+    // Method to clean room input fields
     private void cleanTextQ() {
         edtTipo.setText("");
         edtPreco.setText("");
         edtNumero.setText("");
     }
-    
+
+    // Method to clean service input fields
     private void cleanTextS() {
         edtTipoS.setText("");
         edtValorS.setText("");
     }
-    
+
+    // Method to list all rooms from the database
     public void listaQuartos() {
         Connection conn = Database.getConnection();
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-
+            // SQL query to get all rooms
             String sql = "SELECT tipo, numero, preco, disponivel FROM quartos";
             stmt = conn.prepareStatement(sql);
             rs = stmt.executeQuery();
 
+            // Clear the table before adding new rows
             DefaultTableModel model = (DefaultTableModel) quartos.getModel();
-
             model.setRowCount(0);
 
+            // Iterate through the result set and add each room to the table
             while (rs.next()) {
                 String tipo = rs.getString("tipo");
                 String numero = rs.getString("numero");
@@ -292,6 +304,7 @@ public class WinQuartosServicos extends javax.swing.JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            // Close resources
             try {
                 if (rs != null) {
                     rs.close();
@@ -308,6 +321,7 @@ public class WinQuartosServicos extends javax.swing.JFrame {
         }
     }
 
+    // Method to check if a room already exists in the database
     private static boolean quartoExist(String numero) {
         Connection conn = Database.getConnection();
         boolean existe = false;
@@ -318,7 +332,7 @@ public class WinQuartosServicos extends javax.swing.JFrame {
 
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                existe = rs.getInt(1) > 0;
+                existe = rs.getInt(1) > 0;  // Check if the room exists
             }
         } catch (SQLException ex) {
             Logger.getLogger(Quartos.class.getName()).log(Level.SEVERE, null, ex);
@@ -332,23 +346,25 @@ public class WinQuartosServicos extends javax.swing.JFrame {
             }
         }
 
-        return existe;
+        return existe;  // Return true if the room exists, false otherwise
     }
 
+    // Method to list all services from the database
     public void listaServicos() {
         Connection conn = Database.getConnection();
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-
+            // SQL query to get all services
             String sql = "SELECT tipo, preco FROM servicos";
             stmt = conn.prepareStatement(sql);
             rs = stmt.executeQuery();
 
+            // Clear the table before adding new rows
             DefaultTableModel model = (DefaultTableModel) servicos.getModel();
-
             model.setRowCount(0);
 
+            // Iterate through the result set and add each service to the table
             while (rs.next()) {
                 String tipo = rs.getString("tipo");
                 double preco = rs.getDouble("preco");
@@ -359,6 +375,7 @@ public class WinQuartosServicos extends javax.swing.JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            // Close resources
             try {
                 if (rs != null) {
                     rs.close();
@@ -375,17 +392,18 @@ public class WinQuartosServicos extends javax.swing.JFrame {
         }
     }
 
-    private static boolean servicoExist(String numero) {
+    // Method to check if a service already exists in the database
+    private static boolean servicoExist(String tipo) {
         Connection conn = Database.getConnection();
         boolean existe = false;
 
         try {
             PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM servicos WHERE tipo = ?");
-            stmt.setString(1, numero);
+            stmt.setString(1, tipo);
 
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                existe = rs.getInt(1) > 0;
+                existe = rs.getInt(1) > 0;  // Check if the service exists
             }
         } catch (SQLException ex) {
             Logger.getLogger(Quartos.class.getName()).log(Level.SEVERE, null, ex);
@@ -399,7 +417,7 @@ public class WinQuartosServicos extends javax.swing.JFrame {
             }
         }
 
-        return existe;
+        return existe;  // Return true if the service exists, false otherwise
     }
 
     public static void main(String args[]) {
