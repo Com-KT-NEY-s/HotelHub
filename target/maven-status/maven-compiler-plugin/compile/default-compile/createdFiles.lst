@@ -1,5 +1,6 @@
 adm\WinAdmLogado$2.class
 cadastros\WinQuartosServicos$2.class
+helpers\KeyboardHelper$2.class
 adm\WinListaFuncionarios$4.class
 adm\WinAdmLogado$5.class
 adm\WinListaFuncionarios$1.class
@@ -11,11 +12,14 @@ adm\WinAdmLogado$1.class
 Classes\QuartosReservados.class
 adm\WinListaFuncionarios$3.class
 adm\WinAdmLogado$6.class
+helpers\KeyboardHelper$1.class
 cadastros\WinQuartosReservados$1.class
 cadastros\WinQuartosServicos$3.class
 cadastros\WinQuartosServicos.class
 adm\WinListaFuncionarios$5.class
+helpers\KeyboardHelper.class
 adm\WinAdmLogado$4.class
 adm\WinListaFuncionarios.class
 adm\WinAdmLogado$3.class
+helpers\KeyboardHelper$3.class
 cadastros\WinQuartosServicos$1.class
