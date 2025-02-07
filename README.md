@@ -8,7 +8,7 @@
 
 ## Descrição
 
-O Sistema de Gestão Hoteleira foi desenvolvido para facilitar e automatizar as operações diárias de um hotel, fornecendo uma plataforma centralizada para o gerenciamento de reservas, quartos, hóspedes e funcionários. O objetivo é tornar o processo de administração hoteleira mais eficiente, com uma interface simples e intuitiva que permite uma rápida visualização do status do hotel.
+O HotelHub foi desenvolvido para facilitar e automatizar as operações diárias de um hotel, fornecendo uma plataforma centralizada para o gerenciamento de reservas, quartos, hóspedes e funcionários. O objetivo é tornar o processo de administração hoteleira mais eficiente, com uma interface simples e intuitiva que permite uma rápida visualização do status do hotel.
 
 ## Funcionalidades Principais
 
@@ -21,21 +21,16 @@ O Sistema de Gestão Hoteleira foi desenvolvido para facilitar e automatizar as 
 
 - **Gestão de Quartos**:
   - Cadastro e configuração de tipos de quartos (simples, duplo, suíte).
-  - Controle de disponibilidade e status dos quartos (ocupado, disponível, manutenção).
+  - Controle de disponibilidade e status dos quartos (ocupado, disponível).
   - Definição de tarifas por tipo de quarto.
 
 - **Check-in e Check-out**:
   - Registro de entrada dos hóspedes no momento do check-in.
   - Cálculo automático do valor da estadia durante o check-out, considerando o tempo de permanência e o tipo de quarto.
-  - Emissão de recibos e faturas.
 
 - **Gestão de Funcionários**:
-  - Cadastro de funcionários.
+  - Cadastro, edição e remoção de funcionários.
     
-- **Relatórios**:
-  - Relatórios de ocupação do hotel, por período ou por tipo de quarto.
-  - Relatórios de histórico de reservas e check-ins.
-
 ## Fluxo do Sistema
 
 1. **Cadastro de Hóspedes e Funcionários**: O sistema permite o registro detalhado de hóspedes e funcionários, garantindo que os dados sejam armazenados de forma organizada e acessível.
